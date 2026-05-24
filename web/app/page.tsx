@@ -89,7 +89,7 @@ export default function Home() {
           </div>
           <ol className="list-none m-0 p-0 space-y-0.5 [&_a]:flex [&_a]:items-center [&_a]:gap-2.5 [&_a]:text-sm [&_a]:text-secondary [&_a]:no-underline [&_a]:px-2.5 [&_a]:py-1.5 [&_a]:rounded-md [&_a]:transition-colors [&_a]:hover:bg-bg-hover [&_a]:hover:text-foreground">
             {[
-              ["#start", "启动 — 安装 Claude Code + 登录服务"],
+              ["#start", "启动 — 安装 CC + 登录 + 装 Skills"],
               ["#project", "创建项目 — 一句话生成博客"],
               ["#deploy", "部署上线 — 推送 GitHub + Vercel"],
               ["#write", "写文章 — 说一句就发布"],
@@ -149,6 +149,61 @@ export default function Home() {
 
           <Callout variant="green" icon={<IconCheckCircle size={18} />}>
             登录完成后，之后所有操作都不需要再手动输入命令了。直接用自然语言告诉 Claude Code 你要做什么。
+          </Callout>
+
+          {/* 安装 Skills */}
+          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-9 mb-3 flex items-center gap-2">
+            <H3Icon><IconBot /></H3Icon> 安装 Skills（核心步骤）
+          </h3>
+          <p className="text-[15px] text-secondary leading-relaxed mb-4">
+            Skills 是 Claude Code 的能力插件，装上之后 AI 就会按照专业规范来写代码。所有 Skills 都在 <a href="https://skill.sh" target="_blank" rel="noopener" className="text-accent-blue font-semibold no-underline hover:underline">skill.sh</a> 上，通过 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">/find-skills</code> 命令搜索和安装。
+          </p>
+
+          <PromptBlock>
+            &ldquo;/find-skills&rdquo; 然后输入关键词搜索，比如 &ldquo;frontend design&rdquo;
+          </PromptBlock>
+
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动连接 skill.sh 搜索，展示匹配结果，你选择后自动安装。</p>
+            <CodeBlock filename="Claude Code 交互流程">
+              <span className="comment"># 你输入:</span>{"\n"}
+              /find-skills{"\n\n"}
+              <span className="comment"># CC 会问你想搜什么:</span>{"\n"}
+              What kind of skills are you looking for?{"\n"}
+              <span className="string">&gt; frontend design</span>{"\n\n"}
+              <span className="comment"># CC 展示搜索结果，你选择要装的:</span>{"\n"}
+              ✓ Installed: frontend-design{"\n"}
+              ✓ Installed: vercel-react-best-practices{"\n"}
+              ✓ Installed: tailwind-design-system
+            </CodeBlock>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>Skills 安装完成！</strong> 之后的开发中，Claude Code 会自动使用这些 Skills 的规范来写代码。
+          </ResultBlock>
+
+          <h3 className="font-[family-name:var(--font-display)] text-[15px] font-semibold mt-5 mb-3 text-secondary">博客项目推荐安装的 Skills</h3>
+
+          <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-4 my-4 space-y-3">
+            {[
+              ["必装", "accent-purple", "accent-purple-bg", "frontend-design", "生成高质量前端界面，避免千篇一律的 AI 设计"],
+              ["必装", "accent-purple", "accent-purple-bg", "vercel-react-best-practices", "Vercel 官方 57 条 React/Next.js 性能优化规则"],
+              ["推荐", "accent-blue", "accent-blue-bg", "tailwind-design-system", "Tailwind CSS v4 设计系统，样式更规范"],
+              ["推荐", "accent-blue", "accent-blue-bg", "seo-audit", "SEO 审计，检查搜索引擎优化质量"],
+              ["可选", "accent-green", "accent-green-bg", "shadcn/ui", "精美 UI 组件库，搜索框、暗黑模式切换等"],
+            ].map(([badge, color, bg, name, desc]) => (
+              <div key={name} className="flex items-start gap-2.5 text-sm">
+                <span className={`shrink-0 bg-${bg} text-${color} px-2 py-0.5 rounded text-xs font-semibold`}>{badge}</span>
+                <div className="leading-relaxed">
+                  <strong className="text-foreground">{name}</strong>
+                  <span className="text-secondary"> — {desc}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Callout variant="purple" icon={<IconBot size={18} />}>
+            <strong>Skill 是什么？</strong>你可以理解为 &ldquo;给 AI 装专业技能包&rdquo;。比如装了 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">frontend-design</code>，Claude Code 写前端代码时就会自动遵循专业设计规范，不会生成千篇一律的模板风格。更多 Skills 可以在 <a href="https://skill.sh" target="_blank" rel="noopener" className="text-accent-purple font-semibold no-underline hover:underline">skill.sh</a> 浏览。
           </Callout>
         </section>
 
