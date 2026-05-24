@@ -9,7 +9,7 @@ import {
   IconBot, IconClipboard, IconFlame, IconPenLine, IconRefresh,
   IconLightbulb, IconCheck, IconCheckCircle, IconSparkles,
   IconLink, IconSettings, IconHeart, IconFolder, IconFile,
-  IconLock, IconPalette, IconBarChart, IconSearch, IconMessage,
+  IconLock, IconPalette, IconBarChart, IconSearch, IconMessage, IconAlertTriangle,
 } from "./icons";
 
 function SectionNum({ n }: { n: string }) {
@@ -355,8 +355,16 @@ export default function Home() {
             <strong>部署成功！</strong> 约 1~2 分钟后你会得到一个在线地址，如 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">my-blog-xxx.vercel.app</code>。全世界都能访问你的博客了！
           </ResultBlock>
 
-          <Callout variant="purple" icon={<IconSparkles size={18} />}>
-            <strong>自动部署已开启：</strong>之后每次你对 Claude Code 说 &ldquo;推送代码&rdquo;，它执行 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">git push</code> 后，Vercel 会自动重新部署。你永远不需要手动操作。
+          <Callout variant="green" icon={<IconCheckCircle size={18} />}>
+            <strong>开启自动部署：</strong>去 Vercel 后台 → 项目 Settings → Git → 连接你的 GitHub 仓库，之后每次 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">git push</code> Vercel 就会自动重新部署，无需手动操作。
+          </Callout>
+
+          <Callout variant="orange" icon={<IconAlertTriangle size={18} />}>
+            <strong>git push 后没自动部署？</strong>说明你用的是 CLI 部署（<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">vercel --prod</code>），还没在 Vercel 后台连接 GitHub 仓库。两种解决方式：
+            <ul className="list-disc pl-5 mt-2 space-y-1.5">
+              <li><strong>方式一（推荐）：</strong>去 Vercel 后台连接 GitHub 仓库，开启 Git 集成。如果项目在子目录（如 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">web/</code>），记得在 Settings 里把 Root Directory 设为 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">web</code></li>
+              <li><strong>方式二：</strong>每次推送后手动告诉 Claude Code &ldquo;重新部署到 Vercel&rdquo;，它会执行 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">vercel --prod</code></li>
+            </ul>
           </Callout>
         </section>
 
