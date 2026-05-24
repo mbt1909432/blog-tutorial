@@ -2,6 +2,7 @@ import { ClientEffects } from "./components/ClientEffects";
 import { CodeBlock } from "./components/CodeBlock";
 import { Callout } from "./components/Callout";
 import { ToggleBlock } from "./components/ToggleBlock";
+import { PromptBlock, ActionBlock, ResultBlock } from "./components/PromptBlock";
 import {
   IconZap, IconFileText, IconGlobe, IconRocket, IconBookOpen,
   IconKey, IconWrench, IconTerminal, IconPackage, IconGitBranch,
@@ -44,17 +45,14 @@ export default function Home() {
       <div className="progress-bar" id="progress-bar" />
 
       {/* Nav */}
-      <nav
-        id="nav-bar"
-        className="sticky top-0 bg-white/85 backdrop-blur-xl border-b border-border z-[999] transition-shadow"
-      >
+      <nav id="nav-bar" className="sticky top-0 bg-white/85 backdrop-blur-xl border-b border-border z-[999] transition-shadow">
         <div className="max-w-[780px] mx-auto px-6 py-3 flex items-center justify-between">
           <div className="font-[family-name:var(--font-display)] text-sm font-semibold text-foreground tracking-tight flex items-center gap-2">
             <span className="nav-dot w-2 h-2 rounded-full bg-gradient-to-br from-accent-blue to-accent-purple" />
-            Vercel Blog Tutorial
+            Claude Code 博客搭建指南
           </div>
           <div className="flex gap-1.5 max-sm:hidden">
-            {["Prep", "CLI", "Skills", "Project", "Deploy", "Content", "Advanced"].map((t) => (
+            {["Start", "Project", "Deploy", "Write", "Domain", "Advanced"].map((t) => (
               <a key={t} href={`#${t.toLowerCase()}`} className="text-[13px] text-secondary no-underline px-2.5 py-1 rounded-md hover:bg-bg-hover hover:text-foreground transition-colors">
                 {t}
               </a>
@@ -67,20 +65,20 @@ export default function Home() {
         {/* Hero */}
         <header className="pt-20 pb-16 text-center relative">
           <div className="hero-glow absolute -top-10 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none" />
-          <div className="fade-down inline-flex items-center gap-1.5 text-xs font-medium text-accent-blue bg-accent-blue-bg px-3.5 py-[5px] rounded-full mb-6 tracking-wide">
-            <IconZap size={14} /> 零基础友好 &middot; 免费部署 &middot; 15 分钟搞定
+          <div className="fade-down inline-flex items-center gap-1.5 text-xs font-medium text-accent-purple bg-accent-purple-bg px-3.5 py-[5px] rounded-full mb-6 tracking-wide">
+            <IconBot size={14} /> 用自然语言驱动 &middot; AI 自动执行 &middot; 15 分钟搞定
           </div>
           <h1 className="fade-down fade-down-1 font-[family-name:var(--font-display)] text-[42px] font-bold leading-tight mb-4 tracking-tight">
-            Vercel + Git<br />
-            <span className="bg-gradient-to-r from-accent-blue to-accent-purple bg-clip-text text-transparent">个人博客搭建全指南</span>
+            Claude Code 搭建<br />
+            <span className="bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">个人博客全指南</span>
           </h1>
           <p className="fade-down fade-down-2 text-[17px] text-secondary leading-relaxed max-w-[520px] mx-auto mb-8">
-            从零开始，用 Git 管理内容、Vercel 自动部署，打造属于你的个人博客。无需服务器，完全免费。
+            你不需要会命令行。只需要用自然语言告诉 Claude Code 你要做什么，它会自动帮你创建项目、写代码、部署上线。
           </p>
           <div className="fade-down fade-down-3 flex items-center justify-center gap-5 text-[13px] text-secondary max-sm:flex-col max-sm:gap-2">
-            <span className="flex items-center gap-1.5"><IconFileText size={16} /> 预计阅读 15 min</span>
-            <span className="flex items-center gap-1.5"><IconGlobe size={16} /> 支持自定义域名</span>
-            <span className="flex items-center gap-1.5"><IconRocket size={16} /> 自动 CI/CD</span>
+            <span className="flex items-center gap-1.5"><IconBot size={16} /> 自然语言驱动</span>
+            <span className="flex items-center gap-1.5"><IconGlobe size={16} /> 免费部署到 Vercel</span>
+            <span className="flex items-center gap-1.5"><IconRocket size={16} /> 推送即上线</span>
           </div>
         </header>
 
@@ -91,24 +89,19 @@ export default function Home() {
           </div>
           <ol className="list-none m-0 p-0 space-y-0.5 [&_a]:flex [&_a]:items-center [&_a]:gap-2.5 [&_a]:text-sm [&_a]:text-secondary [&_a]:no-underline [&_a]:px-2.5 [&_a]:py-1.5 [&_a]:rounded-md [&_a]:transition-colors [&_a]:hover:bg-bg-hover [&_a]:hover:text-foreground">
             {[
-              ["#prepare", "准备工作 — 账号 / CLI / Skills 全览"],
-              ["#cli-tools", "CLI 工具安装与用途", true],
-              ["#skills", "推荐 Skills（AI 辅助）", true],
-              ["#project", "创建项目 — 搭建博客框架"],
-              ["#project-structure", "项目结构说明", true],
-              ["#deploy", "部署上线 — 连接 Vercel"],
-              ["#content", "写文章 — Git 工作流"],
+              ["#start", "启动 — 安装 Claude Code + 登录服务"],
+              ["#project", "创建项目 — 一句话生成博客"],
+              ["#deploy", "部署上线 — 推送 GitHub + Vercel"],
+              ["#write", "写文章 — 说一句就发布"],
               ["#domain", "绑定域名 — 个性化访问"],
-              ["#advanced", "进阶优化 — 主题 / 性能 / SEO"],
+              ["#advanced", "进阶 — 美化 / 性能 / SEO"],
               ["#faq", "常见问题 FAQ"],
-            ].map(([href, text, sub], i) => (
-              <li key={String(href)} className={sub ? "pl-14" : ""}>
+            ].map(([href, text], i) => (
+              <li key={String(href)}>
                 <a href={String(href)}>
-                  {!sub && (
-                    <span className="font-mono text-[11px] font-medium text-accent-blue bg-accent-blue-bg px-[7px] py-0.5 rounded min-w-[28px] text-center">
-                      {String(i + 1 - (sub ? 0 : 0)).padStart(2, "0")}
-                    </span>
-                  )}
+                  <span className="font-mono text-[11px] font-medium text-accent-purple bg-accent-purple-bg px-[7px] py-0.5 rounded min-w-[28px] text-center">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   {text}
                 </a>
               </li>
@@ -116,466 +109,370 @@ export default function Home() {
           </ol>
         </div>
 
-        {/* Section 1: 准备工作 */}
-        <section className="section-reveal mb-14" id="prepare">
+        {/* ── Section 1: 启动 ── */}
+        <section className="section-reveal mb-14" id="start">
           <SectionNum n="01" />
-          <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">准备工作</h2>
-          <p className="text-[15px] text-secondary mb-6">搭建前需要注册账号、安装 CLI 工具和配置 AI 辅助 Skills，大约 10 分钟。</p>
+          <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">启动</h2>
+          <p className="text-[15px] text-secondary mb-6">安装 Claude Code，登录 GitHub 和 Vercel。之后所有操作都在 Claude Code 里用自然语言完成。</p>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconKey /></H3Icon> 需要注册的账号
+            <H3Icon><IconWrench /></H3Icon> 安装 Claude Code
           </h3>
+
+          <PromptBlock>
+            在终端运行以下命令安装 Claude Code（需要先装好 Node.js）：
+          </PromptBlock>
+
+          <ActionBlock>
+            <CodeBlock filename="Terminal — 安装 Claude Code">
+              <span className="keyword">npm</span> install -g @anthropic-ai/claude-code{"\n\n"}
+              <span className="comment"># 进入你的工作目录</span>{"\n"}
+              <span className="keyword">cd</span> ~/projects{"\n"}
+              <span className="keyword">claude</span>
+            </CodeBlock>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>Claude Code 交互式终端启动</strong>。你会看到一个 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">&gt;</code> 提示符，之后所有操作都在这里用自然语言完成。
+          </ResultBlock>
+
+          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
+            <H3Icon><IconKey /></H3Icon> 登录服务（只需一次）
+          </h3>
+          <p className="text-[15px] text-secondary mb-4">在 Claude Code 启动前，你需要手动完成以下步骤：</p>
+
           <div className="grid gap-3 my-5">
-            <StepCard n={1} title="GitHub 账号" desc="代码托管平台，存放博客源码、触发自动部署 → github.com" />
-            <StepCard n={2} title="Vercel 账号" desc="建议直接用 GitHub 登录，免去绑定步骤 → vercel.com" />
-            <StepCard n={3} title="域名（可选）" desc="自定义博客地址，推荐 Cloudflare / Namesilo / 阿里云" />
+            <StepCard n={1} title="GitHub 登录" desc="终端运行 gh auth login，按提示用浏览器授权" />
+            <StepCard n={2} title="Vercel 登录" desc="终端运行 vercel login，按提示用浏览器授权" />
+            <StepCard n={3} title="Claude Code 登录" desc="首次运行 claude 会引导你登录 Anthropic 账号" />
           </div>
 
-          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconWrench /></H3Icon> 本地工具安装
-          </h3>
-
-          <CodeBlock filename="Terminal — 配置 Git">
-            <span className="comment"># 配置 Git 用户名和邮箱</span>{"\n"}
-            <span className="keyword">git</span> config --global user.name <span className="string">"你的名字"</span>{"\n"}
-            <span className="keyword">git</span> config --global user.email <span className="string">"your@email.com"</span>{"\n\n"}
-            <span className="comment"># 验证安装</span>{"\n"}
-            <span className="keyword">git</span> --version{"\n"}
-            <span className="keyword">node</span> --version
-          </CodeBlock>
-
-          {/* CLI Tools */}
-          <div id="cli-tools">
-            <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-              <H3Icon><IconTerminal /></H3Icon> CLI 工具安装与用途
-            </h3>
-            <p className="text-[15.5px] leading-relaxed mb-4">以下命令行工具是整个工作流的核心，每个都有明确用途：</p>
-
-            <ToggleBlock icon={<><IconWrench size={16} /></>} title="Git CLI — 版本控制核心" defaultOpen>
-              <p className="text-sm text-secondary leading-relaxed mb-3"><strong className="text-foreground">用途：</strong>管理代码版本、提交文章、推送到 GitHub 触发自动部署。</p>
-              <CodeBlock filename="git-commands">
-                <span className="comment"># 核心命令</span>{"\n"}
-                <span className="keyword">git</span> init                    <span className="comment"># 初始化仓库</span>{"\n"}
-                <span className="keyword">git</span> add .                    <span className="comment"># 暂存所有更改</span>{"\n"}
-                <span className="keyword">git</span> commit -m <span className="string">"msg"</span>          <span className="comment"># 提交到本地</span>{"\n"}
-                <span className="keyword">git</span> push origin main         <span className="comment"># 推送 → 触发 Vercel 自动部署</span>
-              </CodeBlock>
-            </ToggleBlock>
-
-            <ToggleBlock icon={<><IconZap size={16} /></>} title="Vercel CLI — 部署与本地预览">
-              <p className="text-sm text-secondary leading-relaxed mb-3"><strong className="text-foreground">用途：</strong>本地预览生产构建、手动部署、管理环境变量、查看部署日志。</p>
-              <CodeBlock filename="vercel-cli">
-                <span className="comment"># 安装</span>{"\n"}
-                <span className="keyword">npm</span> i -g vercel{"\n\n"}
-                <span className="comment"># 核心命令</span>{"\n"}
-                <span className="keyword">vercel</span>                     <span className="comment"># 部署到 Vercel（交互式）</span>{"\n"}
-                <span className="keyword">vercel</span> dev                  <span className="comment"># 本地模拟 Vercel 环境</span>{"\n"}
-                <span className="keyword">vercel</span> env pull             <span className="comment"># 拉取远程环境变量到本地</span>
-              </CodeBlock>
-            </ToggleBlock>
-
-            <ToggleBlock icon={<><IconPackage size={16} /></>} title="npm / npx — 包管理">
-              <p className="text-sm text-secondary leading-relaxed mb-3"><strong className="text-foreground">用途：</strong>安装项目依赖、运行开发服务器、执行脚手架命令。随 Node.js 一起安装。</p>
-              <CodeBlock filename="npm-commands">
-                <span className="keyword">npm</span> install                  <span className="comment"># 安装项目依赖</span>{"\n"}
-                <span className="keyword">npm</span> run dev                  <span className="comment"># 启动本地开发服务器 (localhost:3000)</span>{"\n"}
-                <span className="keyword">npx</span> create-next-app@latest   <span className="comment"># 用最新版创建 Next.js 项目</span>
-              </CodeBlock>
-            </ToggleBlock>
-
-            <ToggleBlock icon={<><IconGitBranch size={16} /></>} title="GitHub CLI (gh) — GitHub 操作（可选）">
-              <p className="text-sm text-secondary leading-relaxed mb-3"><strong className="text-foreground">用途：</strong>命令行直接操作 GitHub：创建仓库、PR、Issue，不用打开浏览器。</p>
-              <CodeBlock filename="gh-cli">
-                <span className="comment"># 安装</span>{"\n"}
-                <span className="keyword">winget</span> install GitHub.cli{"\n\n"}
-                <span className="comment"># 核心命令</span>{"\n"}
-                <span className="keyword">gh</span> auth login                <span className="comment"># 登录 GitHub</span>{"\n"}
-                <span className="keyword">gh</span> repo create my-blog --public  <span className="comment"># 命令行创建仓库</span>{"\n"}
-                <span className="keyword">gh</span> pr create                 <span className="comment"># 创建 Pull Request</span>
-              </CodeBlock>
-            </ToggleBlock>
-          </div>
-
-          {/* Skills */}
-          <div id="skills">
-            <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-              <H3Icon><IconBot /></H3Icon> 推荐 Skills（AI 辅助开发）
-            </h3>
-
-            <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-5 space-y-2.5">
-              {[
-                ["必装", "accent-blue", "accent-blue-bg", "frontend-design", "生成高质量前端界面代码，避免 AI 生成千篇一律的设计。博客主题定制必备。"],
-                ["必装", "accent-blue", "accent-blue-bg", "vercel-react-best-practices", "57 条 Vercel 官方 React/Next.js 性能优化规则。确保博客 Lighthouse 90+ 分。"],
-                ["推荐", "accent-green", "accent-green-bg", "tailwind-design-system", "Tailwind CSS v4 设计系统，博客样式管理更规范。"],
-                ["推荐", "accent-green", "accent-green-bg", "responsive-design", "响应式布局最佳实践，确保博客在手机/平板/PC 都好看。"],
-                ["推荐", "accent-green", "accent-green-bg", "seo-audit", "SEO 审计工具，检查博客的搜索引擎优化质量。"],
-                ["可选", "accent-orange", "accent-orange-bg", "shadcn/ui", "精美 UI 组件库，博客交互组件（搜索、暗黑模式切换等）直接复用。"],
-                ["可选", "accent-orange", "accent-orange-bg", "react-testing", "React 组件测试，确保博客功能（文章列表、搜索等）正常工作。"],
-              ].map(([badge, color, bg, name, desc]) => (
-                <div key={name} className="flex gap-2.5 items-start py-1.5 border-b border-border last:border-b-0">
-                  <span className={`shrink-0 bg-${bg} text-${color} px-2.5 py-0.5 rounded text-xs font-semibold`}>{badge}</span>
-                  <div>
-                    <strong className="text-[13.5px]">{name}</strong>
-                    <br /><span className="text-secondary text-[13px]">{desc}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Callout variant="purple" icon={<IconBot size={18} />}>
-              <strong>Skills 使用场景：</strong>让 AI 用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">frontend-design</code> 生成博客首页布局 → 用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">tailwind-design-system</code> 统一样式 → 用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">seo-audit</code> 检查 SEO。全链路 AI 辅助！
-            </Callout>
-
-            <Callout variant="green" icon={<IconSparkles size={18} />}>
-              <strong>你不需要手动输入任何命令！</strong>本教程中展示的所有 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">git</code>、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">gh</code>、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">vercel</code>、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">npm</code> 命令都是由 Claude Code 自动执行的。你只需要用自然语言描述需求（比如 "帮我创建项目并部署到 Vercel"），Claude Code 就会自动运行这些命令、创建文件、完成部署。这就是 AI 驱动开发的流程。
-            </Callout>
-          </div>
-
-          {/* Tool overview */}
-          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-8 mb-3 flex items-center gap-2">
-            <H3Icon><IconClipboard /></H3Icon> 工具总览
-          </h3>
-          <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-5 font-mono text-[13px] leading-9">
-            <div className="grid grid-cols-[120px_1fr_160px] border-b-2 border-border pb-2 mb-1 font-sans font-semibold text-xs text-secondary">
-              <span>工具</span><span>用途</span><span>安装方式</span>
-            </div>
-            {[
-              ["Git CLI", "版本控制、代码推送触发部署", "git-scm.com"],
-              ["Vercel CLI", "本地预览、手动部署、环境变量管理", "npm i -g vercel"],
-              ["Node.js/npm", "运行 Next.js、安装依赖、开发服务器", "nodejs.org"],
-              ["GitHub CLI", "命令行操作仓库、PR（可选）", "winget install GitHub.cli"],
-              ["Skills", "AI 辅助开发（前端设计、性能优化等）", "Claude Code 内置"],
-            ].map(([tool, usage, install]) => (
-              <div key={tool} className="grid grid-cols-[120px_1fr_160px] border-b border-border last:border-b-0">
-                <strong className="font-sans">{tool}</strong>
-                <span className="font-sans text-secondary">{usage}</span>
-                <span className="text-secondary">{install}</span>
-              </div>
-            ))}
-          </div>
-
-          <Callout variant="blue" icon={<IconLightbulb size={18} />}>
-            <strong>提示：</strong>Vercel 免费额度足够个人博客使用，每月 100GB 带宽、无限次部署。完全够用！
+          <Callout variant="green" icon={<IconCheckCircle size={18} />}>
+            登录完成后，之后所有操作都不需要再手动输入命令了。直接用自然语言告诉 Claude Code 你要做什么。
           </Callout>
         </section>
 
         <hr className="border-none h-px bg-border my-12" />
 
-        {/* Section 2: 创建项目 */}
+        {/* ── Section 2: 创建项目 ── */}
         <section className="section-reveal mb-14" id="project">
           <SectionNum n="02" />
           <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">创建项目</h2>
-          <p className="text-[15px] text-secondary mb-6">推荐使用 Next.js 作为博客框架，Vercel 对其有最佳支持。</p>
+          <p className="text-[15px] text-secondary mb-6">一句话让 Claude Code 帮你搭建完整的 Next.js 博客项目。</p>
 
-          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconRocket /></H3Icon> 快速初始化
-          </h3>
-          <CodeBlock filename="Terminal">
-            <span className="comment"># 方案 A: 使用 Next.js 官方博客模板（推荐新手）</span>{"\n"}
-            <span className="keyword">npx</span> create-next-app@latest my-blog \{"\n"}
-            {"  "}--typescript --tailwind --app{"\n\n"}
-            <span className="comment"># 方案 B: 使用 Vercel 博客模板（一键部署）</span>{"\n"}
-            <span className="comment"># 访问 github.com/vercel/next.js/tree/canary/examples/blog-starter</span>{"\n\n"}
-            <span className="comment"># 进入项目并运行</span>{"\n"}
-            <span className="keyword">cd</span> my-blog{"\n"}
-            <span className="keyword">npm</span> run dev
-          </CodeBlock>
+          <PromptBlock>
+            &ldquo;帮我用 Next.js + TypeScript + Tailwind 创建一个博客项目，名字叫 my-blog&rdquo;
+          </PromptBlock>
 
-          <Callout variant="green" icon={<IconCheckCircle size={18} />}>
-            执行 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">npm run dev</code> 后访问 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">localhost:3000</code> 即可预览博客。
-          </Callout>
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动执行以下命令：</p>
+            <CodeBlock filename="Claude Code 自动执行">
+              <span className="keyword">npx</span> create-next-app@latest my-blog \{"\n"}
+              {"  "}--typescript --tailwind --app --eslint{"\n\n"}
+              <span className="keyword">cd</span> my-blog{"\n"}
+              <span className="keyword">npm</span> run dev
+            </CodeBlock>
+          </ActionBlock>
 
-          <div id="project-structure">
-            <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-              <H3Icon><IconFolder /></H3Icon> 项目结构说明
-            </h3>
-            <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-5 font-mono text-[13px] leading-[1.85]">
+          <ResultBlock>
+            <strong>项目创建成功！</strong> Claude Code 自动生成了完整的 Next.js 项目结构。你可以在浏览器打开 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">localhost:3000</code> 预览效果。
+          </ResultBlock>
+
+          {/* 项目结构 */}
+          <ToggleBlock icon={<><IconFolder size={16} /></>} title="查看项目结构">
+            <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-3 font-mono text-[13px] leading-[1.85]">
               <span className="file-folder flex items-center gap-1"><IconFolder size={16} /> my-blog/</span>
               <span className="file-folder flex items-center gap-1 pl-6"><IconFolder size={16} /> app/ <span className="file-desc">— 页面路由 (App Router)</span></span>
               <span className="file-file flex items-center gap-1 pl-12"><IconFile size={14} /> page.tsx <span className="file-desc">— 首页</span></span>
               <span className="file-file flex items-center gap-1 pl-12"><IconFile size={14} /> layout.tsx <span className="file-desc">— 全局布局</span></span>
-              <span className="file-folder flex items-center gap-1 pl-12"><IconFolder size={16} /> blog/</span>
-              <span className="pl-6"><span className="file-file flex items-center gap-1"><IconFile size={14} /> page.tsx <span className="file-desc">— 博客列表页</span></span></span>
+              <span className="pl-6"><span className="file-folder flex items-center gap-1"><IconFolder size={16} /> blog/ <span className="file-desc">— 博客路由</span></span></span>
               <span className="pl-6"><span className="file-folder flex items-center gap-1"><IconFolder size={16} /> content/ <span className="file-desc">— Markdown 文章</span></span></span>
-              <span className="pl-6"><span className="file-folder flex items-center gap-1"><IconFolder size={16} /> components/ <span className="file-desc">— 可复用组件</span></span></span>
-              <span className="pl-6"><span className="file-folder flex items-center gap-1"><IconFolder size={16} /> public/ <span className="file-desc">— 静态资源 (图片等)</span></span></span>
+              <span className="pl-6"><span className="file-folder flex items-center gap-1"><IconFolder size={16} /> public/ <span className="file-desc">— 图片等静态资源</span></span></span>
             </div>
-          </div>
+          </ToggleBlock>
+
+          {/* 继续定制 */}
+          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
+            <H3Icon><IconPalette /></H3Icon> 定制博客样式
+          </h3>
+
+          <PromptBlock>
+            &ldquo;帮我设计一个 Notion 风格的博客首页，要有文章列表、标签筛选、深色模式支持&rdquo;
+          </PromptBlock>
+
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动：</p>
+            <ul className="list-disc pl-5 text-sm text-secondary space-y-1.5 leading-relaxed">
+              <li>安装并使用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">frontend-design</code> Skill 生成高质量界面</li>
+              <li>创建博客首页、文章列表、标签组件</li>
+              <li>配置 Tailwind CSS 设计系统</li>
+              <li>实现深色模式切换</li>
+              <li>直接修改文件，无需你手动编辑</li>
+            </ul>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>博客界面生成完成。</strong> 刷新 localhost:3000 就能看到新的博客界面。不满意可以继续说 &ldquo;把配色改成蓝白主题&rdquo;，Claude Code 会直接修改。
+          </ResultBlock>
         </section>
 
         <hr className="border-none h-px bg-border my-12" />
 
-        {/* Section 3: 部署上线 */}
+        {/* ── Section 3: 部署上线 ── */}
         <section className="section-reveal mb-14" id="deploy">
           <SectionNum n="03" />
           <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">部署上线</h2>
-          <p className="text-[15px] text-secondary mb-6">两种部署方式：Vercel 自动部署（推荐）或 GitHub Pages 静态托管。</p>
+          <p className="text-[15px] text-secondary mb-6">一句话完成：创建 GitHub 仓库 + 推送代码 + 部署到 Vercel。</p>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconFlame /></H3Icon> Step 1: 创建仓库并推送
+            <H3Icon><IconGitBranch /></H3Icon> 推送到 GitHub
           </h3>
-          <p className="text-[15.5px] leading-relaxed mb-4">用 <code className="font-mono text-xs bg-[#f7f6f3] text-accent-red px-1.5 py-0.5 rounded font-medium">gh</code> CLI 一条命令创建远程仓库，免去手动去网页操作：</p>
 
-          <CodeBlock filename="Terminal — gh CLI 全流程">
-            <span className="comment"># 1. 初始化本地仓库</span>{"\n"}
-            <span className="keyword">git</span> init{"\n"}
-            <span className="keyword">git</span> add .{"\n"}
-            <span className="keyword">git</span> commit -m <span className="string">"init: first commit"</span>{"\n\n"}
-            <span className="comment"># 2. 用 gh CLI 直接创建 GitHub 公开仓库（不用开浏览器）</span>{"\n"}
-            <span className="keyword">gh</span> repo create my-blog --public --description <span className="string">"我的个人博客"</span>{"\n\n"}
-            <span className="comment"># 3. 推送到 GitHub</span>{"\n"}
-            <span className="keyword">git</span> branch -M main{"\n"}
-            <span className="keyword">git</span> remote add origin https://github.com/用户名/my-blog.git{"\n"}
-            <span className="keyword">git</span> push -u origin main
-          </CodeBlock>
+          <PromptBlock>
+            &ldquo;把这个项目推送到 GitHub，创建一个公开仓库叫 my-blog&rdquo;
+          </PromptBlock>
 
-          <Callout variant="blue" icon={<IconLightbulb size={18} />}>
-            <strong>gh 的优势：</strong>一条命令完成创建仓库 + 设置 remote + 推送。也可以用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">gh repo create --source=. --push</code> 一步到位。
-          </Callout>
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动依次执行：</p>
+            <CodeBlock filename="Claude Code 自动执行">
+              <span className="comment"># 1. 初始化 Git 仓库</span>{"\n"}
+              <span className="keyword">git</span> init{"\n"}
+              <span className="keyword">git</span> add .{"\n"}
+              <span className="keyword">git</span> commit -m <span className="string">"init: first commit"</span>{"\n\n"}
+              <span className="comment"># 2. 用 gh CLI 创建远程仓库（不用开浏览器）</span>{"\n"}
+              <span className="keyword">gh</span> repo create my-blog --public \{"\n"}
+              {"  "}--description <span className="string">"我的个人博客"</span>{"\n\n"}
+              <span className="comment"># 3. 推送代码</span>{"\n"}
+              <span className="keyword">git</span> branch -M main{"\n"}
+              <span className="keyword">git</span> push -u origin main
+            </CodeBlock>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>代码已推送到 GitHub！</strong> 仓库地址：<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">github.com/你的用户名/my-blog</code>。全程你没输入任何 git 命令。
+          </ResultBlock>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconZap /></H3Icon> Step 2A: Vercel 部署（推荐）
+            <H3Icon><IconZap /></H3Icon> 部署到 Vercel
           </h3>
-          <div className="grid gap-3 my-5">
-            <StepCard n={1} title="登录 Vercel Dashboard" desc="打开 vercel.com 并用 GitHub 登录" />
-            <StepCard n={2} title='点击 "Add New" → "Project"' desc="选择 Import Git Repository" />
-            <StepCard n={3} title="选择你的 my-blog 仓库" desc="Vercel 会自动检测 Next.js 框架，直接点 Deploy" />
-            <StepCard n={4} title="等待部署完成" desc="约 1~2 分钟，你会获得一个 xxx.vercel.app 地址" />
-          </div>
+
+          <PromptBlock>
+            &ldquo;把这个项目部署到 Vercel&rdquo;
+          </PromptBlock>
+
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动执行：</p>
+            <CodeBlock filename="Claude Code 自动执行">
+              <span className="comment"># 安装 Vercel CLI（如果没装过）</span>{"\n"}
+              <span className="keyword">npm</span> i -g vercel{"\n\n"}
+              <span className="comment"># 一键部署</span>{"\n"}
+              <span className="keyword">vercel</span> --yes
+            </CodeBlock>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>部署成功！</strong> 约 1~2 分钟后你会得到一个在线地址，如 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">my-blog-xxx.vercel.app</code>。全世界都能访问你的博客了！
+          </ResultBlock>
 
           <Callout variant="purple" icon={<IconSparkles size={18} />}>
-            <strong>自动部署：</strong>之后每次 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">git push</code>，Vercel 会自动检测并重新部署，无需手动操作！这就是 CI/CD 的魅力。
+            <strong>自动部署已开启：</strong>之后每次你对 Claude Code 说 &ldquo;推送代码&rdquo;，它执行 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">git push</code> 后，Vercel 会自动重新部署。你永远不需要手动操作。
           </Callout>
-
-          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconGitBranch /></H3Icon> Step 2B: GitHub Pages 部署（纯静态）
-          </h3>
-          <CodeBlock filename="Terminal — GitHub Pages">
-            <span className="comment"># 用 gh CLI 一键开启 GitHub Pages</span>{"\n"}
-            <span className="keyword">gh</span> api repos/{"{owner}"}/{"{repo}"}/pages \{"\n"}
-            {"  "}-X POST -f build_type=workflow{"\n\n"}
-            <span className="comment"># 或在仓库 Settings → Pages → Source 选 main 分支</span>{"\n"}
-            <span className="comment"># 访问地址: https://用户名.github.io/my-blog/</span>
-          </CodeBlock>
-
-          {/* Comparison */}
-          <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-5 font-mono text-[13px] leading-9">
-            <div className="grid grid-cols-2 border-b-2 border-border pb-2 mb-1 font-sans font-semibold text-xs text-secondary">
-              <span>Vercel</span><span>GitHub Pages</span>
-            </div>
-            {[
-              ["支持 SSR / ISR / API", "仅静态文件"],
-              ["自动 HTTPS + CDN", "自动 HTTPS + CDN"],
-              ["每次 push 自动部署", "每次 push 自动部署"],
-              ["预览部署（每个 PR）", "无预览"],
-            ].map(([a, b], i) => (
-              <div key={i} className="grid grid-cols-2 border-b border-border last:border-b-0">
-                <span className="font-sans">{a}</span><span className="font-sans">{b}</span>
-              </div>
-            ))}
-            <div className="grid grid-cols-2 font-sans font-semibold">
-              <span className="text-accent-green">推荐：Next.js 项目</span>
-              <span className="text-accent-green">推荐：纯静态博客</span>
-            </div>
-          </div>
         </section>
 
         <hr className="border-none h-px bg-border my-12" />
 
-        {/* Section 4: 写文章 */}
-        <section className="section-reveal mb-14" id="content">
+        {/* ── Section 4: 写文章 ── */}
+        <section className="section-reveal mb-14" id="write">
           <SectionNum n="04" />
-          <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">写文章 — Git 工作流</h2>
-          <p className="text-[15px] text-secondary mb-6">用 Markdown 写作，Git 管理版本，推送即发布。</p>
+          <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">写文章</h2>
+          <p className="text-[15px] text-secondary mb-6">告诉 Claude Code 你想写什么，它帮你创建 Markdown 文件并发布。</p>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconPenLine /></H3Icon> 创建一篇文章
+            <H3Icon><IconPenLine /></H3Icon> 创建并发布一篇文章
           </h3>
 
-          <CodeBlock filename="content/my-first-post.md">
-            <span className="tag">---</span>{"\n"}
-            <span className="prop">title</span>: <span className="string">"我的第一篇博客"</span>{"\n"}
-            <span className="prop">date</span>: <span className="string">"2025-01-15"</span>{"\n"}
-            <span className="prop">excerpt</span>: <span className="string">"这是摘要内容"</span>{"\n"}
-            <span className="prop">tags</span>: [<span className="string">"随笔"</span>, <span className="string">"技术"</span>]{"\n"}
-            <span className="tag">---</span>{"\n\n"}
-            <span className="comment">## Hello World</span>{"\n\n"}
-            这是我的第一篇文章，使用 Markdown 编写。
-          </CodeBlock>
+          <PromptBlock>
+            &ldquo;帮我写一篇关于我学习前端开发的博客文章，标题叫&ensp;前端之路&ensp;，加上标签，然后推送到 GitHub&rdquo;
+          </PromptBlock>
+
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动：</p>
+            <ul className="list-disc pl-5 text-sm text-secondary space-y-1.5 leading-relaxed">
+              <li>在 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">content/</code> 目录创建 Markdown 文件</li>
+              <li>自动生成 frontmatter（标题、日期、标签、摘要）</li>
+              <li>写好文章正文内容</li>
+              <li>执行 git add、git commit、git push 一键发布</li>
+            </ul>
+            <div className="mt-3">
+              <CodeBlock filename="Claude Code 自动创建 content/前端之路.md">
+                <span className="tag">---</span>{"\n"}
+                <span className="prop">title</span>: <span className="string">"前端之路"</span>{"\n"}
+                <span className="prop">date</span>: <span className="string">"2025-01-15"</span>{"\n"}
+                <span className="prop">tags</span>: [<span className="string">"前端"</span>, <span className="string">"学习笔记"</span>]{"\n"}
+                <span className="prop">excerpt</span>: <span className="string">"记录我从零开始学习前端开发的旅程"</span>{"\n"}
+                <span className="tag">---</span>{"\n\n"}
+                <span className="comment">## 为什么选择前端</span>{"\n\n"}
+                前端开发是离用户最近的技术领域...
+              </CodeBlock>
+            </div>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>文章已发布！</strong> Vercel 检测到 push 后自动重新部署，约 30 秒后你的新文章就上线了。全程你只说了一句话。
+          </ResultBlock>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
-            <H3Icon><IconRefresh /></H3Icon> Git 发布流程
+            <H3Icon><IconRefresh /></H3Icon> 日常发布工作流
           </h3>
 
-          <CodeBlock filename="Terminal — 每次发布文章">
-            <span className="comment"># 1. 写完文章后，添加到暂存区</span>{"\n"}
-            <span className="keyword">git</span> add content/my-first-post.md{"\n\n"}
-            <span className="comment"># 2. 提交</span>{"\n"}
-            <span className="keyword">git</span> commit -m <span className="string">"post: 添加第一篇博客文章"</span>{"\n\n"}
-            <span className="comment"># 3. 推送 → Vercel 自动部署！</span>{"\n"}
-            <span className="keyword">git</span> push origin main
-          </CodeBlock>
+          <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-5">
+            {[
+              ["写新文章", "&ldquo;帮我写一篇关于 XXX 的博客&rdquo; → CC 创建 .md + push → 自动上线"],
+              ["修改文章", "&ldquo;把&ensp;前端之路&ensp;那篇的第二段改一下，加入 React 的内容&rdquo; → CC 修改 + push"],
+              ["删除文章", "&ldquo;删除&ensp;测试文章&ensp;那篇&rdquo; → CC 删除文件 + push"],
+              ["批量操作", "&ldquo;把所有文章的日期格式统一改成 YYYY-MM-DD&rdquo; → CC 批量修改 + push"],
+            ].map(([action, desc], i) => (
+              <div key={i} className="flex items-start gap-3 py-3 border-b border-border last:border-b-0">
+                <span className="shrink-0 bg-accent-blue-bg text-accent-blue px-2.5 py-0.5 rounded text-xs font-semibold">{action}</span>
+                <span className="text-[13px] text-secondary leading-relaxed">{desc}</span>
+              </div>
+            ))}
+          </div>
 
-          <Callout variant="orange" icon={<IconLightbulb size={18} />}>
-            <strong>提交规范：</strong>建议使用约定式提交：<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">post:</code> 新文章、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">fix:</code> 修复、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">feat:</code> 新功能。
-          </Callout>
-
-          <ToggleBlock icon={<><IconFileText size={16} /></>} title="高级工作流：草稿分支 + PR 预览">
-            <p className="text-sm text-secondary leading-relaxed mb-3">对于重要的文章，可以先创建草稿分支，写完再通过 Pull Request 合并。Vercel 会为每个 PR 自动生成预览链接。</p>
-            <CodeBlock filename="draft-workflow">
-              <span className="comment"># 创建草稿分支</span>{"\n"}
-              <span className="keyword">git</span> checkout -b draft/my-article{"\n\n"}
-              <span className="comment"># 写完后推送并创建 PR</span>{"\n"}
-              <span className="keyword">git</span> push origin draft/my-article{"\n"}
-              <span className="comment"># 在 GitHub 上创建 Pull Request</span>{"\n"}
-              <span className="comment"># Vercel 会自动生成预览 URL</span>
-            </CodeBlock>
+          <ToggleBlock icon={<><IconGitBranch size={16} /></>} title="高级：草稿分支 + PR 预览">
+            <PromptBlock>
+              &ldquo;我想写一篇重要的技术文章，先放到草稿分支，写完再合并到 main&rdquo;
+            </PromptBlock>
+            <p className="text-sm text-secondary leading-relaxed mt-3">
+              Claude Code 会创建 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">draft/xxx</code> 分支、推送、并在 GitHub 创建 Pull Request。Vercel 会为每个 PR 自动生成预览链接，你可以在合并前预览效果。
+            </p>
           </ToggleBlock>
         </section>
 
         <hr className="border-none h-px bg-border my-12" />
 
-        {/* Section 5: 域名 */}
+        {/* ── Section 5: 域名 ── */}
         <section className="section-reveal mb-14" id="domain">
           <SectionNum n="05" />
           <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">绑定自定义域名</h2>
-          <p className="text-[15px] text-secondary mb-6">让你的博客拥有专属域名，如 blog.yourname.com。</p>
-          <div className="grid gap-3 my-5">
-            <StepCard n={1} title="购买域名" desc="推荐 Namesilo / Cloudflare / 阿里云，一般 .com 域名年费 ≈ ¥50-70" />
-            <StepCard n={2} title="Vercel 添加域名" desc="Settings → Domains → 输入你的域名" />
-            <StepCard n={3} title="配置 DNS 解析" desc="在域名商后台添加 CNAME 记录指向 cname.vercel-dns.com" />
-            <StepCard n={4} title="等待生效" desc="DNS 传播需要几分钟到几小时，Vercel 自动配置 HTTPS 证书" />
+          <p className="text-[15px] text-secondary mb-6">有域名的话，一句话让 Claude Code 帮你配置。</p>
+
+          <PromptBlock>
+            &ldquo;帮我把 blog.mydomain.com 绑定到这个 Vercel 项目&rdquo;
+          </PromptBlock>
+
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会告诉你需要做什么：</p>
+            <ul className="list-disc pl-5 text-sm text-secondary space-y-1.5 leading-relaxed">
+              <li>在域名商后台添加 CNAME 记录：<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">blog → cname.vercel-dns.com</code></li>
+              <li>在 Vercel 项目 Settings → Domains 添加你的域名</li>
+              <li>如果需要，还会帮你配置 DNS 验证</li>
+            </ul>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>域名绑定完成！</strong> DNS 生效后（几分钟到几小时），访问 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">blog.mydomain.com</code> 就是你的博客。HTTPS 证书自动配置。
+          </ResultBlock>
+        </section>
+
+        <hr className="border-none h-px bg-border my-12" />
+
+        {/* ── Section 6: 进阶 ── */}
+        <section className="section-reveal mb-14" id="advanced">
+          <SectionNum n="06" />
+          <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">进阶优化</h2>
+          <p className="text-[15px] text-secondary mb-6">继续用自然语言让 Claude Code 优化你的博客。</p>
+
+          <div className="bg-bg-secondary border border-border rounded-[10px] px-6 py-5 my-5 space-y-4">
+            {[
+              ["美化主题", "&ldquo;帮我把博客主题改成暗色系科技风，参考 Linear 的设计&rdquo;"],
+              ["添加评论", "&ldquo;帮我集成 Giscus 评论系统，基于 GitHub Discussions&rdquo;"],
+              ["SEO 优化", "&ldquo;帮我给每篇文章加上 Open Graph 元数据，优化 SEO&rdquo;"],
+              ["性能优化", "&ldquo;帮我优化 Core Web Vitals 评分，图片用 next/image 懒加载&rdquo;"],
+              ["添加搜索", "&ldquo;帮我加一个文章搜索功能，支持标题和内容模糊匹配&rdquo;"],
+              ["RSS 订阅", "&ldquo;帮我生成 RSS feed，路径是 /feed.xml&rdquo;"],
+              ["统计分析", "&ldquo;帮我集成 Vercel Analytics 看访问数据&rdquo;"],
+            ].map(([action, prompt], i) => (
+              <div key={i} className="border-b border-border last:border-b-0 pb-4 last:pb-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="shrink-0 bg-accent-blue-bg text-accent-blue px-2.5 py-0.5 rounded text-xs font-semibold">{action}</span>
+                </div>
+                <div className="text-[13.5px] text-accent-purple font-medium pl-1">{prompt}</div>
+              </div>
+            ))}
           </div>
-          <Callout variant="green" icon={<IconLock size={18} />}>
-            <strong>HTTPS 免费自动配置：</strong>Vercel 会自动为你的域名签发 SSL 证书，无需额外操作。
+
+          <Callout variant="blue" icon={<IconLightbulb size={18} />}>
+            <strong>技巧：</strong>你可以在一个 prompt 里组合多个需求，比如 &ldquo;帮我美化主题、加评论系统、优化 SEO，然后推送到 GitHub&rdquo;。Claude Code 会依次完成所有任务。
           </Callout>
         </section>
 
         <hr className="border-none h-px bg-border my-12" />
 
-        {/* Section 6: 进阶 */}
-        <section className="section-reveal mb-14" id="advanced">
-          <SectionNum n="06" />
-          <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">进阶优化</h2>
-          <p className="text-[15px] text-secondary mb-6">让你的博客更快、更好看、更容易被搜索到。</p>
-
-          <ToggleBlock icon={<><IconPalette size={16} /></>} title="主题美化">
-            <p className="text-sm text-secondary leading-relaxed mb-2">推荐几款优秀的 Next.js 博客主题：</p>
-            <ul className="list-disc pl-5 text-sm text-secondary leading-8">
-              <li><strong>Tailwind Blog</strong> — Tailwind CSS 官方博客模板</li>
-              <li><strong>Nextra</strong> — 基于 MDX 的文档/博客框架</li>
-              <li><strong>Lumen</strong> — 极简风格，Notion-like</li>
-            </ul>
-          </ToggleBlock>
-
-          <ToggleBlock icon={<><IconBarChart size={16} /></>} title="性能优化 (Core Web Vitals)">
-            <ul className="list-none my-4 space-y-1">
-              {[
-                "使用 next/image 自动优化图片",
-                "开启 ISR（增量静态生成），兼顾速度与更新",
-                "字体用 next/font 加载，避免 CLS",
-                "代码分割：动态 import 重型组件",
-                "用 Lighthouse 跑分，目标 90+",
-              ].map((t) => (
-                <li key={t} className="flex items-start gap-2.5 py-1.5 text-sm leading-relaxed">
-                  <span className="check-box shrink-0 w-4 h-4 border-2 border-border rounded mt-1 cursor-pointer" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </ToggleBlock>
-
-          <ToggleBlock icon={<><IconSearch size={16} /></>} title="SEO 优化">
-            <CodeBlock filename="app/blog/[slug]/page.tsx">
-              <span className="keyword">export</span> <span className="keyword">async</span> <span className="function">function</span> <span className="function">generateMetadata</span>({"{"} <span className="variable">params</span> {"}"}) {"{"}{"\n"}
-              {"  "}<span className="keyword">const</span> <span className="variable">post</span> = <span className="keyword">await</span> <span className="function">getPost</span>(<span className="variable">params</span>.<span className="prop">slug</span>);{"\n\n"}
-              {"  "}<span className="keyword">return</span> {"{"}{"\n"}
-              {"    "}<span className="prop">title</span>: <span className="variable">post</span>.<span className="prop">title</span>,{"\n"}
-              {"    "}<span className="prop">description</span>: <span className="variable">post</span>.<span className="prop">excerpt</span>,{"\n"}
-              {"    "}<span className="prop">openGraph</span>: {"{"}{"\n"}
-              {"      "}<span className="prop">title</span>: <span className="variable">post</span>.<span className="prop">title</span>,{"\n"}
-              {"      "}<span className="prop">description</span>: <span className="variable">post</span>.<span className="prop">excerpt</span>,{"\n"}
-              {"      "}<span className="prop">type</span>: <span className="string">{"'article'"}</span>,{"\n"}
-              {"    "},{"}"},{"\n"}
-              {"  "},{"}"};{"\n"}
-              {"}"}
-            </CodeBlock>
-          </ToggleBlock>
-
-          <ToggleBlock icon={<><IconMessage size={16} /></>} title="评论系统">
-            <p className="text-sm text-secondary leading-relaxed mb-2">推荐免费方案：</p>
-            <ul className="list-disc pl-5 text-sm text-secondary leading-8">
-              <li><strong>Giscus</strong> — 基于 GitHub Discussions，免费无广告</li>
-              <li><strong>Utterances</strong> — 基于 GitHub Issues，轻量</li>
-              <li><strong>Disqus</strong> — 老牌方案（有广告）</li>
-            </ul>
-          </ToggleBlock>
-        </section>
-
-        <hr className="border-none h-px bg-border my-12" />
-
-        {/* Section 7: FAQ */}
+        {/* ── Section 7: FAQ ── */}
         <section className="section-reveal mb-14" id="faq">
           <SectionNum n="07" />
           <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">常见问题 FAQ</h2>
-          <p className="text-[15px] text-secondary mb-6">新手最常遇到的问题，点击展开查看解答。</p>
+
+          <ToggleBlock icon={<></>} title="我完全不会编程，能用这个教程吗？">
+            <p className="text-sm text-secondary leading-relaxed">能！这正是 Claude Code 的价值所在。你只需要会说话、会描述需求。所有的命令、代码、配置都由 Claude Code 自动完成。</p>
+          </ToggleBlock>
 
           <ToggleBlock icon={<></>} title="Vercel 免费版有什么限制？">
-            <p className="text-sm text-secondary leading-relaxed">免费额度：每月 100GB 带宽、无限次部署、Serverless 函数 10秒超时。个人博客完全够用，日均几千访问量没有问题。</p>
+            <p className="text-sm text-secondary leading-relaxed">每月 100GB 带宽、无限次部署。个人博客完全够用，日均几千访问量没问题。</p>
           </ToggleBlock>
 
           <ToggleBlock icon={<></>} title="推送后多久能看到更新？">
-            <p className="text-sm text-secondary leading-relaxed">通常 30 秒 ~ 2 分钟。Vercel 检测到 push 后会自动触发构建和部署。如果文章较多，构建时间会长一些。</p>
+            <p className="text-sm text-secondary leading-relaxed">通常 30 秒 ~ 2 分钟。Vercel 检测到 push 后自动触发构建和部署。</p>
+          </ToggleBlock>
+
+          <ToggleBlock icon={<></>} title="Claude Code 会自动执行危险操作吗？">
+            <p className="text-sm text-secondary leading-relaxed">不会。涉及删除、覆盖等操作时，Claude Code 会先确认。你也可以随时拒绝它的操作建议。</p>
           </ToggleBlock>
 
           <ToggleBlock icon={<></>} title="不想用 Next.js，有其他选择吗？">
-            <p className="text-sm text-secondary leading-relaxed">可以！Vercel 支持多种框架：Astro（推荐静态博客）、Hugo、Hexo、Gatsby、甚至纯 HTML。Astro 特别适合博客，默认零 JS 输出。</p>
-          </ToggleBlock>
-
-          <ToggleBlock icon={<></>} title="部署失败了怎么办？">
-            <p className="text-sm text-secondary leading-relaxed">在 Vercel Dashboard → Deployments 中查看构建日志，常见原因：依赖安装失败（检查 package.json）、语法错误、环境变量缺失。</p>
+            <p className="text-sm text-secondary leading-relaxed">直接说 &ldquo;用 Astro 帮我创建博客&rdquo; 或 &ldquo;用纯 HTML 写一个博客&rdquo;。Claude Code 支持任何技术栈。</p>
           </ToggleBlock>
         </section>
 
         <hr className="border-none h-px bg-border my-12" />
 
-        {/* Summary */}
+        {/* ── Summary ── */}
         <section className="section-reveal mb-14" id="summary">
           <div className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-accent-blue to-accent-purple mb-3">
             <IconCheck size={16} className="text-white [&>svg]:stroke-white" />
           </div>
           <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">完整工作流总结</h2>
-          <p className="text-[15px] text-secondary mb-6">一图看懂从写作到上线的全流程。</p>
+          <p className="text-[15px] text-secondary mb-6">整个过程你只需要说 5 句话。</p>
 
-          <div className="bg-[#1e1e1e] rounded-[10px] overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.12)]">
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-white/5 border-b border-white/[0.08]">
-              <div className="flex gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]" />
-                <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+          <div className="space-y-4 my-6">
+            {[
+              ["01", "ac-purple-bg", "ac-purple", "&ldquo;帮我创建一个 Next.js 博客项目&rdquo;"],
+              ["02", "ac-purple-bg", "ac-purple", "&ldquo;设计一个 Notion 风格的博客首页&rdquo;"],
+              ["03", "ac-purple-bg", "ac-purple", "&ldquo;推送到 GitHub 并部署到 Vercel&rdquo;"],
+              ["04", "ac-purple-bg", "ac-purple", "&ldquo;帮我写一篇关于 XXX 的博客文章&rdquo;"],
+              ["05", "ac-purple-bg", "ac-purple", "&ldquo;推送到 GitHub&rdquo; → 自动上线！"],
+            ].map(([num, , , text], i) => (
+              <div key={i} className="flex items-start gap-4">
+                <span className="shrink-0 w-8 h-8 flex items-center justify-center bg-accent-purple-bg text-accent-purple rounded-lg font-mono text-sm font-semibold">
+                  {num}
+                </span>
+                <div className="text-[15px] text-accent-purple font-medium pt-1 leading-relaxed">
+                  {text}
+                </div>
               </div>
-              <span className="font-mono text-xs text-white/45">Workflow</span>
-            </div>
-            <div className="px-5 py-5">
-              <pre className="font-[family-name:var(--font-display)] text-sm text-[#dcdcaa] text-center whitespace-pre m-0 leading-relaxed">
-                <span className="flex items-center justify-center gap-2"><IconPenLine size={16} className="[&>svg]:stroke-[#dcdcaa]" /> 写 Markdown</span>
-                {"     "}→     {"\n"}
-                <span className="flex items-center justify-center gap-2"><IconGitBranch size={16} className="[&>svg]:stroke-[#dcdcaa]" /> git push</span>
-                {"     "}→     {"\n"}
-                <span className="flex items-center justify-center gap-2"><IconGlobe size={16} className="[&>svg]:stroke-[#dcdcaa]" /> Vercel 自动部署</span>
-              </pre>
-            </div>
+            ))}
           </div>
 
           {/* Bookmark Cards */}
-          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3.5 flex items-center gap-2">
+          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-10 mb-3.5 flex items-center gap-2">
             <IconBookOpen size={18} /> 推荐资源
           </h3>
 
           {([
+            ["Claude Code 文档", "学习更多 Claude Code 用法和技巧", "docs.anthropic.com/en/docs/claude-code", IconTerminal, "stroke-accent-purple"],
             ["Vercel 官方文档", "部署、域名、框架配置的权威参考", "vercel.com/docs", IconZap, "stroke-accent-blue"],
-            ["Next.js 文档", "App Router、静态生成、图片优化等核心功能", "nextjs.org/docs", IconSettings, "stroke-accent-purple"],
-            ["Next.js Blog Starter", "官方博客模板，一键部署到 Vercel", "github.com/vercel/next.js", IconFileText, "stroke-accent-green"],
+            ["Next.js 文档", "App Router、静态生成、图片优化等", "nextjs.org/docs", IconSettings, "stroke-accent-green"],
           ] as const).map(([title, desc, url, Icon, color], i) => (
             <a key={i} href="#" className="flex border border-border rounded-lg overflow-hidden no-underline text-foreground transition-all hover:border-accent-blue hover:shadow-[0_2px_12px_rgba(35,131,226,0.08)] hover:-translate-y-px my-5">
               <div className="px-5 py-4 flex-1">
@@ -593,9 +490,9 @@ export default function Home() {
         {/* Footer */}
         <footer className="text-center py-12 border-t border-border mt-6">
           <p className="text-[13px] text-secondary flex items-center justify-center gap-1">
-            Made with <IconHeart size={16} className="text-accent-red" /> using Vercel + Git
+            Made with <IconHeart size={16} className="text-accent-red" /> using Claude Code + Vercel
           </p>
-          <p className="text-xs text-secondary mt-1.5">本教程基于 Next.js + Vercel 免费方案 &middot; 2025</p>
+          <p className="text-xs text-secondary mt-1.5">本教程由 Claude Code 自动生成 &middot; 2025</p>
           <a
             href="https://web-mauve-five-17.vercel.app"
             target="_blank"
