@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vercel + Git 个人博客搭建指南</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f6f3;
+    --bg-hover: #f1f1ef;
+    --bg-code: #f7f6f3;
+    --text-primary: #37352f;
+    --text-secondary: #787774;
+    --text-code: #eb5757;
+    --border-color: #e9e9e7;
+    --accent-blue: #2383e2;
+    --accent-blue-bg: #e8f0fe;
+    --accent-green: #0f7b6c;
+    --accent-green-bg: #e3f2f0;
+    --accent-orange: #d9730d;
+    --accent-orange-bg: #fbe8d3;
+    --accent-red: #eb5757;
+    --accent-red-bg: #fde8e8;
+    --accent-purple: #6940a5;
+    --accent-purple-bg: #f0e8fc;
+    --shadow-callout: rgba(15, 15, 15, 0.05);
+    --shadow-card: rgba(15, 15, 15, 0.03);
+    --font-display: 'Noto Serif SC', 'Georgia', serif;
+    --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --max-width: 780px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+    width: 0%;
+    transition: width 0.15s ease;
+    z-index: 1000;
+  }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 999;
+    transition: box-shadow 0.3s ease;
+  }
+  .nav-bar.scrolled {
+    box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+  }
+  .nav-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-logo .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    animation: pulse-dot 2.5s ease infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+  .nav-links {
+    display: flex;
+    gap: 6px;
+  }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  .nav-links a:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  /* ── Main Content ── */
+  .page-container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Hero Section ── */
+  .hero {
+    padding: 80px 0 60px;
+    text-align: center;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(35,131,226,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    background: var(--accent-blue-bg);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
+    animation: fade-down 0.6s ease;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+    animation: fade-down 0.6s ease 0.1s both;
+  }
+  .hero h1 .gradient-text {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    max-width: 520px;
+    margin: 0 auto 32px;
+    animation: fade-down 0.6s ease 0.2s both;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    animation: fade-down 0.6s ease 0.3s both;
+  }
+  .hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  @keyframes fade-down {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Table of Contents ── */
+  .toc {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+    animation: fade-down 0.6s ease 0.4s both;
+  }
+  .toc-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toc-list {
+    list-style: none;
+    counter-reset: toc-counter;
+  }
+  .toc-list li {
+    counter-increment: toc-counter;
+    margin-bottom: 2px;
+  }
+  .toc-list li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  .toc-list li a::before {
+    content: counter(toc-counter, decimal-leading-zero);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent-blue);
+    background: var(--accent-blue-bg);
+    padding: 2px 7px;
+    border-radius: 4px;
+    min-width: 28px;
+    text-align: center;
+  }
+  .toc-list li a:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+  }
+  .toc-list li.sub a {
+    padding-left: 56px;
+    font-size: 13px;
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 56px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  h2 + p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  h3 .icon {
+    font-size: 16px;
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 16px 18px;
+    border-radius: 8px;
+    margin: 20px 0;
+    border-left: 3px solid;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .callout-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .callout-blue {
+    background: var(--accent-blue-bg);
+    border-color: var(--accent-blue);
+    color: #1a5fb4;
+  }
+  .callout-green {
+    background: var(--accent-green-bg);
+    border-color: var(--accent-green);
+    color: #0a5c50;
+  }
+  .callout-orange {
+    background: var(--accent-orange-bg);
+    border-color: var(--accent-orange);
+    color: #8b4d00;
+  }
+  .callout-red {
+    background: var(--accent-red-bg);
+    border-color: var(--accent-red);
+    color: #a33;
+  }
+  .callout-purple {
+    background: var(--accent-purple-bg);
+    border-color: var(--accent-purple);
+    color: #4a2d7a;
+  }
+
+  /* ── Code Blocks ── */
+  .code-block {
+    background: #1e1e1e;
+    border-radius: 10px;
+    margin: 20px 0;
+    overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  }
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .code-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .code-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .code-dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .code-dots span:nth-child(1) { background: #ff5f57; }
+  .code-dots span:nth-child(2) { background: #ffbd2e; }
+  .code-dots span:nth-child(3) { background: #28c840; }
+  .code-filename {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+  }
+  .code-copy {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 3px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .code-copy:hover {
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.1);
+  }
+  .code-body {
+    padding: 18px 20px;
+    overflow-x: auto;
+  }
+  .code-body pre {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: #d4d4d4;
+    white-space: pre;
+    margin: 0;
+  }
+  .code-body .comment  { color: #6a9955; }
+  .code-body .keyword  { color: #c586c0; }
+  .code-body .string   { color: #ce9178; }
+  .code-body .function { color: #dcdcaa; }
+  .code-body .variable { color: #9cdcfe; }
+  .code-body .tag      { color: #569cd6; }
+  .code-body .attr     { color: #92d1a3; }
+  .code-body .prop     { color: #9cdcfe; }
+  .code-body .value    { color: #ce9178; }
+
+  /* Inline code */
+  code:not(pre code) {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--bg-code);
+    color: var(--text-code);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  /* ── Toggle Blocks (Notion-style) ── */
+  .toggle-block {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin: 16px 0;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+  .toggle-block:hover {
+    box-shadow: 0 1px 8px var(--shadow-callout);
+  }
+  .toggle-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 18px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+  .toggle-header:hover {
+    background: var(--bg-hover);
+  }
+  .toggle-arrow {
+    display: none;
+  }
+  .toggle-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 18px;
+  }
+  .toggle-block.open .toggle-content {
+    max-height: 1200px;
+    padding: 0 18px 18px;
+  }
+  .toggle-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ── Step Cards ── */
+  .step-cards {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  .step-card:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 2px 12px rgba(35,131,226,0.08);
+    transform: translateY(-1px);
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border-radius: 7px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-blue);
+  }
+  .step-card-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .step-card-text strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--text-primary);
+  }
+  .step-card-text span {
+    color: var(--text-secondary);
+  }
+
+  /* ── File Tree ── */
+  .file-tree {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 20px 0;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.85;
+  }
+  .file-tree .folder { color: var(--accent-blue); font-weight: 500; }
+  .file-tree .file   { color: var(--text-primary); }
+  .file-tree .desc   { color: var(--text-secondary); font-style: italic; }
+  .file-tree .indent { padding-left: 24px; display: block; }
+  .file-tree .indent2 { padding-left: 48px; display: block; }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    height: 1px;
+    background: var(--border-color);
+    margin: 48px 0;
+  }
+
+  /* ── Checklist ── */
+  .checklist {
+    list-style: none;
+    margin: 16px 0;
+  }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  .check-box {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .check-box.checked {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+  }
+  .check-box.checked::after {
+    content: '';
+    position: absolute;
+    left: 4px; top: 1px;
+    width: 5px; height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checklist li.done span {
+    color: var(--text-secondary);
+    text-decoration: line-through;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 48px 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 24px;
+  }
+  .footer p {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .footer .heart { color: var(--accent-red); }
+
+  /* ── Bookmark Card ── */
+  .bookmark-card {
+    display: flex;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    margin: 20px 0;
+  }
+  .bookmark-card:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 2px 12px rgba(35,131,226,0.08);
+    transform: translateY(-1px);
+  }
+  .bookmark-info {
+    padding: 16px 20px;
+    flex: 1;
+  }
+  .bookmark-info .bm-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .bookmark-info .bm-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .bookmark-info .bm-url {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .bookmark-img {
+    width: 160px;
+    background: linear-gradient(135deg, var(--accent-blue-bg), var(--accent-purple-bg));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+
+  /* ── SVG Icons ── */
+  .svg-icon {
+    display: inline-block;
+    vertical-align: middle;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .svg-icon-14 { width: 14px; height: 14px; }
+  .svg-icon-16 { width: 16px; height: 16px; }
+  .svg-icon-18 { width: 18px; height: 18px; }
+  .svg-icon-20 { width: 20px; height: 20px; }
+  .svg-icon-36 { width: 36px; height: 36px; }
+  .toggle-arrow-svg {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .toggle-block.open .toggle-arrow-svg {
+    transform: rotate(90deg);
+  }
+  .callout-icon .svg-icon-18 { margin-top: 0; }
+  h3 .icon { display: inline-flex; align-items: center; }
+  .bm-url .svg-icon-14 { margin-right: 2px; }
+  .file-tree svg { vertical-align: middle; margin-right: 4px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 30px; }
+    h2 { font-size: 22px; }
+    .nav-links { display: none; }
+    .hero-meta { flex-direction: column; gap: 8px; }
+    .bookmark-img { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Navigation -->
+<nav class="nav-bar" id="navBar">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <span class="dot"></span>
+      Vercel Blog Tutorial
+    </div>
+    <div class="nav-links">
+      <a href="#prepare">Prep</a>
+      <a href="#cli-tools">CLI</a>
+      <a href="#skills">Skills</a>
+      <a href="#project">Project</a>
+      <a href="#deploy">Deploy</a>
+      <a href="#content">Content</a>
+      <a href="#advanced">Advanced</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-container">
+
+  <!-- ═══ Hero ═══ -->
+  <header class="hero">
+    <div class="hero-badge"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> 零基础友好 &middot; 免费部署 &middot; 15 分钟搞定</div>
+    <h1>Vercel + Git<br><span class="gradient-text">个人博客搭建全指南</span></h1>
+    <p class="hero-subtitle">
+      从零开始，用 Git 管理内容、Vercel 自动部署，打造属于你的个人博客。无需服务器，完全免费。
+    </p>
+    <div class="hero-meta">
+      <span><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> 预计阅读 15 min</span>
+      <span><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> 支持自定义域名</span>
+      <span><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg> 自动 CI/CD</span>
+    </div>
+  </header>
+
+  <!-- ═══ Table of Contents ═══ -->
+  <div class="toc">
+    <div class="toc-title"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> 目录导航</div>
+    <ul class="toc-list">
+      <li><a href="#prepare">准备工作 &mdash; 账号 / CLI / Skills 全览</a></li>
+      <li class="sub"><a href="#cli-tools">CLI 工具安装与用途</a></li>
+      <li class="sub"><a href="#skills">推荐 Skills（AI 辅助）</a></li>
+      <li><a href="#project">创建项目 &mdash; 搭建博客框架</a></li>
+      <li class="sub"><a href="#project-structure">项目结构说明</a></li>
+      <li><a href="#deploy">部署上线 &mdash; 连接 Vercel</a></li>
+      <li><a href="#content">写文章 &mdash; Git 工作流</a></li>
+      <li><a href="#domain">绑定域名 &mdash; 个性化访问</a></li>
+      <li><a href="#advanced">进阶优化 &mdash; 主题 / 性能 / SEO</a></li>
+      <li><a href="#faq">常见问题 FAQ</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══ Section 1: 准备工作 ═══ -->
+  <section class="section" id="prepare">
+    <div class="section-number">01</div>
+    <h2>准备工作</h2>
+    <p>搭建前需要注册账号、安装 CLI 工具和配置 AI 辅助 Skills，大约 10 分钟。</p>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M2 18v3c0 .6.4 1 1 1h4v-3h3v-3h2l1.4-1.4a6.5 6.5 0 1 0-4-4Z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span> 需要注册的账号</h3>
+    <div class="step-cards">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-card-text">
+          <strong>GitHub 账号</strong>
+          <span>代码托管平台，存放博客源码、触发自动部署 &rarr; github.com</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-card-text">
+          <strong>Vercel 账号</strong>
+          <span>建议直接用 GitHub 登录，免去绑定步骤 &rarr; vercel.com</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-card-text">
+          <strong>域名（可选）</strong>
+          <span>自定义博客地址，推荐 Cloudflare / Namesilo / 阿里云</span>
+        </div>
+      </div>
+    </div>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span> 本地工具安装</h3>
+    <ul class="checklist">
+      <li><div class="check-box" onclick="this.classList.toggle('checked');this.parentElement.classList.toggle('done')"></div><span>安装 <strong>Git</strong> &mdash; 版本控制核心工具 &mdash; git-scm.com</span></li>
+      <li><div class="check-box" onclick="this.classList.toggle('checked');this.parentElement.classList.toggle('done')"></div><span>安装 <strong>Node.js 18+</strong> &mdash; 运行 Next.js 和包管理 &mdash; nodejs.org</span></li>
+      <li><div class="check-box" onclick="this.classList.toggle('checked');this.parentElement.classList.toggle('done')"></div><span>安装编辑器 <strong>VS Code</strong>（推荐）</span></li>
+      <li><div class="check-box" onclick="this.classList.toggle('checked');this.parentElement.classList.toggle('done')"></div><span>配置 Git 用户信息</span></li>
+    </ul>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-filename">Terminal &mdash; 配置 Git</span>
+        </div>
+        <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+      </div>
+      <div class="code-body">
+<pre><span class="comment"># 配置 Git 用户名和邮箱</span>
+<span class="keyword">git</span> config --global user.name <span class="string">"你的名字"</span>
+<span class="keyword">git</span> config --global user.email <span class="string">"your@email.com"</span>
+
+<span class="comment"># 验证安装</span>
+<span class="keyword">git</span> --version
+<span class="keyword">node</span> --version</pre>
+      </div>
+    </div>
+
+    <!-- CLI Tools Section -->
+    <div id="cli-tools">
+      <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg></span> CLI 工具安装与用途</h3>
+      <p>以下命令行工具是整个工作流的核心，每个都有明确用途：</p>
+
+      <div class="toggle-block open">
+        <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+          <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Git CLI &mdash; 版本控制核心
+        </div>
+        <div class="toggle-content">
+          <p><strong>用途：</strong>管理代码版本、提交文章、推送到 GitHub 触发自动部署。</p>
+          <p><strong>安装：</strong>下载 git-scm.com 或 <code>winget install Git.Git</code></p>
+          <div class="code-block">
+            <div class="code-body">
+<pre><span class="comment"># 核心命令</span>
+<span class="keyword">git</span> init                    <span class="comment"># 初始化仓库</span>
+<span class="keyword">git</span> add .                    <span class="comment"># 暂存所有更改</span>
+<span class="keyword">git</span> commit -m <span class="string">"msg"</span>          <span class="comment"># 提交到本地</span>
+<span class="keyword">git</span> push origin main         <span class="comment"># 推送 &rarr; 触发 Vercel 自动部署</span>
+<span class="keyword">git</span> pull                     <span class="comment"># 拉取远程更新</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggle-block">
+        <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+          <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg> Vercel CLI &mdash; 部署与本地预览
+        </div>
+        <div class="toggle-content">
+          <p><strong>用途：</strong>本地预览生产构建、手动部署、管理环境变量、查看部署日志。</p>
+          <div class="code-block">
+            <div class="code-body">
+<pre><span class="comment"># 安装</span>
+<span class="keyword">npm</span> i -g vercel
+
+<span class="comment"># 核心命令</span>
+<span class="keyword">vercel</span>                     <span class="comment"># 部署到 Vercel（交互式）</span>
+<span class="keyword">vercel</span> dev                  <span class="comment"># 本地模拟 Vercel 环境</span>
+<span class="keyword">vercel</span> env pull             <span class="comment"># 拉取远程环境变量到本地</span>
+<span class="keyword">vercel</span> ls                   <span class="comment"># 查看所有部署</span>
+<span class="keyword">vercel</span> inspect &lt;url&gt;        <span class="comment"># 查看部署详情与性能</span>
+<span class="keyword">vercel</span> domains add xxx.com  <span class="comment"># 添加自定义域名</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggle-block">
+        <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+          <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg> npm / npx &mdash; 包管理
+        </div>
+        <div class="toggle-content">
+          <p><strong>用途：</strong>安装项目依赖、运行开发服务器、执行脚手架命令。随 Node.js 一起安装。</p>
+          <div class="code-block">
+            <div class="code-body">
+<pre><span class="keyword">npm</span> install                  <span class="comment"># 安装项目依赖</span>
+<span class="keyword">npm</span> run dev                  <span class="comment"># 启动本地开发服务器 (localhost:3000)</span>
+<span class="keyword">npm</span> run build                <span class="comment"># 生产构建（检查能否通过编译）</span>
+<span class="keyword">npx</span> create-next-app@latest   <span class="comment"># 用最新版创建 Next.js 项目</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggle-block">
+        <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+          <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg> GitHub CLI (gh) &mdash; GitHub 操作（可选）
+        </div>
+        <div class="toggle-content">
+          <p><strong>用途：</strong>命令行直接操作 GitHub：创建仓库、PR、Issue，不用打开浏览器。</p>
+          <div class="code-block">
+            <div class="code-body">
+<pre><span class="comment"># 安装</span>
+<span class="keyword">winget</span> install GitHub.cli
+
+<span class="comment"># 核心命令</span>
+<span class="keyword">gh</span> auth login                <span class="comment"># 登录 GitHub</span>
+<span class="keyword">gh</span> repo create my-blog --public  <span class="comment"># 命令行创建仓库</span>
+<span class="keyword">gh</span> pr create                 <span class="comment"># 创建 Pull Request</span>
+<span class="keyword">gh</span> pr list                   <span class="comment"># 查看 PR 列表</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills Section -->
+    <div id="skills">
+      <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span> 推荐 Skills（AI 辅助开发）</h3>
+      <p>使用 Claude Code 等 AI 工具时，以下 Skills 可以大幅提升开发效率：</p>
+
+      <div class="file-tree" style="font-family: var(--font-body); font-size: 14px;">
+        <div style="display:grid; gap:10px;">
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border-color);">
+            <span style="flex-shrink:0; background:var(--accent-blue-bg); color:var(--accent-blue); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">必装</span>
+            <div><strong style="font-size:13.5px;">frontend-design</strong><br><span style="color:var(--text-secondary); font-size:13px;">生成高质量前端界面代码，避免 AI 生成千篇一律的设计。博客主题定制必备。</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border-color);">
+            <span style="flex-shrink:0; background:var(--accent-blue-bg); color:var(--accent-blue); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">必装</span>
+            <div><strong style="font-size:13.5px;">vercel-react-best-practices</strong><br><span style="color:var(--text-secondary); font-size:13px;">57 条 Vercel 官方 React/Next.js 性能优化规则。确保博客 Lighthouse 90+ 分。</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border-color);">
+            <span style="flex-shrink:0; background:var(--accent-green-bg); color:var(--accent-green); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">推荐</span>
+            <div><strong style="font-size:13.5px;">tailwind-design-system</strong><br><span style="color:var(--text-secondary); font-size:13px;">Tailwind CSS v4 设计系统，博客样式管理更规范。</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border-color);">
+            <span style="flex-shrink:0; background:var(--accent-green-bg); color:var(--accent-green); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">推荐</span>
+            <div><strong style="font-size:13.5px;">responsive-design</strong><br><span style="color:var(--text-secondary); font-size:13px;">响应式布局最佳实践，确保博客在手机/平板/PC 都好看。</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border-color);">
+            <span style="flex-shrink:0; background:var(--accent-green-bg); color:var(--accent-green); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">推荐</span>
+            <div><strong style="font-size:13.5px;">seo-audit</strong><br><span style="color:var(--text-secondary); font-size:13px;">SEO 审计工具，检查博客的搜索引擎优化质量。</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0; border-bottom:1px solid var(--border-color);">
+            <span style="flex-shrink:0; background:var(--accent-orange-bg); color:var(--accent-orange); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">可选</span>
+            <div><strong style="font-size:13.5px;">shadcn/ui</strong><br><span style="color:var(--text-secondary); font-size:13px;">精美 UI 组件库，博客交互组件（搜索、暗黑模式切换等）直接复用。</span></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:flex-start; padding:6px 0;">
+            <span style="flex-shrink:0; background:var(--accent-orange-bg); color:var(--accent-orange); padding:2px 10px; border-radius:4px; font-size:12px; font-weight:600;">可选</span>
+            <div><strong style="font-size:13.5px;">react-testing</strong><br><span style="color:var(--text-secondary); font-size:13px;">React 组件测试，确保博客功能（文章列表、搜索等）正常工作。</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-block" style="margin-top:16px;">
+        <div class="code-header">
+          <div class="code-header-left">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-filename">安装 Skills（Claude Code）</span>
+          </div>
+          <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+        </div>
+        <div class="code-body">
+<pre><span class="comment"># 在 Claude Code 中安装 Skill</span>
+<span class="comment"># 方式 1: 使用 /install-skill 命令</span>
+/install-skill frontend-design
+/install-skill vercel-react-best-practices
+
+<span class="comment"># 方式 2: 手动添加到 .claude/settings.json</span>
+<span class="comment"># Skills 会自动在对话中被调用</span></pre>
+        </div>
+      </div>
+
+      <div class="callout callout-purple">
+        <span class="callout-icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span>
+        <div><strong>Skills 使用场景：</strong>让 AI 用 <code>frontend-design</code> 生成博客首页布局 &rarr; 用 <code>tailwind-design-system</code> 统一样式 &rarr; 用 <code>vercel-react-best-practices</code> 优化性能 &rarr; 用 <code>seo-audit</code> 检查 SEO。全链路 AI 辅助！</div>
+      </div>
+    </div>
+
+    <!-- Tool Overview Table -->
+    <h3 style="margin-top:32px;"><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></span> 工具总览</h3>
+    <div class="file-tree" style="font-family: var(--font-body); font-size: 13.5px; line-height: 2;">
+      <div style="display:grid; grid-template-columns: 120px 1fr 160px; gap:0; border-bottom: 2px solid var(--border-color); padding-bottom:8px; margin-bottom:4px; font-weight:600; font-size:12px; color:var(--text-secondary);">
+        <span>工具</span><span>用途</span><span>安装方式</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr 160px; gap:0; border-bottom:1px solid var(--border-color);">
+        <span><strong>Git CLI</strong></span><span>版本控制、代码推送触发部署</span><span style="color:var(--text-secondary)">git-scm.com</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr 160px; gap:0; border-bottom:1px solid var(--border-color);">
+        <span><strong>Vercel CLI</strong></span><span>本地预览、手动部署、环境变量管理</span><span style="color:var(--text-secondary)">npm i -g vercel</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr 160px; gap:0; border-bottom:1px solid var(--border-color);">
+        <span><strong>Node.js/npm</strong></span><span>运行 Next.js、安装依赖、开发服务器</span><span style="color:var(--text-secondary)">nodejs.org</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr 160px; gap:0; border-bottom:1px solid var(--border-color);">
+        <span><strong>GitHub CLI</strong></span><span>命令行操作仓库、PR（可选）</span><span style="color:var(--text-secondary)">winget install GitHub.cli</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 120px 1fr 160px; gap:0;">
+        <span><strong>Skills</strong></span><span>AI 辅助开发（前端设计、性能优化等）</span><span style="color:var(--text-secondary)">Claude Code 内置</span>
+      </div>
+    </div>
+
+    <div class="callout callout-blue">
+      <span class="callout-icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>
+      <div><strong>提示：</strong>Vercel 免费额度足够个人博客使用，每月 100GB 带宽、无限次部署。完全够用！</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Section 2: 创建项目 ═══ -->
+  <section class="section" id="project">
+    <div class="section-number">02</div>
+    <h2>创建项目</h2>
+    <p>推荐使用 Next.js 作为博客框架，Vercel 对其有最佳支持。</p>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span> 快速初始化</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-filename">Terminal</span>
+        </div>
+        <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+      </div>
+      <div class="code-body">
+<pre><span class="comment"># 方案 A: 使用 Next.js 官方博客模板（推荐新手）</span>
+<span class="keyword">npx</span> create-next-app@latest my-blog \
+  --typescript --tailwind --app
+
+<span class="comment"># 方案 B: 使用 Vercel 博客模板（一键部署）</span>
+<span class="comment"># 访问 github.com/vercel/next.js/tree/canary/examples/blog-starter</span>
+
+<span class="comment"># 进入项目并运行</span>
+<span class="keyword">cd</span> my-blog
+<span class="keyword">npm</span> run dev</pre>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></span>
+      <div>执行 <code>npm run dev</code> 后访问 <code>localhost:3000</code> 即可预览博客。</div>
+    </div>
+
+    <div id="project-structure">
+      <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span> 项目结构说明</h3>
+      <div class="file-tree">
+        <span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> my-blog/</span>
+        <span class="indent"><span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> app/</span> <span class="desc">&mdash; 页面路由 (App Router)</span></span>
+        <span class="indent2"><span class="file"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> page.tsx</span> <span class="desc">&mdash; 首页</span></span>
+        <span class="indent2"><span class="file"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> layout.tsx</span> <span class="desc">&mdash; 全局布局</span></span>
+        <span class="indent2"><span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> blog/</span></span>
+        <span class="indent2"><span class="indent"><span class="file"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> page.tsx</span> <span class="desc">&mdash; 博客列表页</span></span></span>
+        <span class="indent2"><span class="indent"><span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> [slug]/</span></span></span>
+        <span class="indent2"><span class="indent"><span class="indent"><span class="file"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> page.tsx</span> <span class="desc">&mdash; 文章详情页</span></span></span></span>
+        <span class="indent"><span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> content/</span> <span class="desc">&mdash; Markdown 文章</span></span>
+        <span class="indent"><span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> components/</span> <span class="desc">&mdash; 可复用组件</span></span>
+        <span class="indent"><span class="folder"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg> public/</span> <span class="desc">&mdash; 静态资源 (图片等)</span></span>
+        <span class="indent"><span class="file"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> next.config.js</span></span>
+        <span class="indent"><span class="file"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg> package.json</span></span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Section 3: 部署上线 ═══ -->
+  <section class="section" id="deploy">
+    <div class="section-number">03</div>
+    <h2>部署上线</h2>
+    <p>将代码推送到 GitHub，然后让 Vercel 自动部署。</p>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span> Step 1: 推送到 GitHub</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-filename">Terminal</span>
+        </div>
+        <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+      </div>
+      <div class="code-body">
+<pre><span class="comment"># 初始化 Git 仓库</span>
+<span class="keyword">git</span> init
+<span class="keyword">git</span> add .
+<span class="keyword">git</span> commit -m <span class="string">"init: first commit"</span>
+
+<span class="comment"># 关联远程仓库（先在 GitHub 创建空仓库）</span>
+<span class="keyword">git</span> remote add origin https://github.com/你的用户名/my-blog.git
+<span class="keyword">git</span> push -u origin main</pre>
+      </div>
+    </div>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span> Step 2: 连接 Vercel</h3>
+    <div class="step-cards">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-card-text">
+          <strong>登录 Vercel Dashboard</strong>
+          <span>打开 vercel.com 并用 GitHub 登录</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-card-text">
+          <strong>点击 "Add New" &rarr; "Project"</strong>
+          <span>选择 "Import Git Repository"</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-card-text">
+          <strong>选择你的 my-blog 仓库</strong>
+          <span>Vercel 会自动检测 Next.js 框架，直接点 Deploy</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-card-text">
+          <strong>等待部署完成</strong>
+          <span>约 1~2 分钟，你会获得一个 xxx.vercel.app 地址</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-purple">
+      <span class="callout-icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg></span>
+      <div><strong>自动部署：</strong>之后每次 <code>git push</code>，Vercel 会自动检测并重新部署，无需手动操作！这就是 CI/CD 的魅力。</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Section 4: 写文章 ═══ -->
+  <section class="section" id="content">
+    <div class="section-number">04</div>
+    <h2>写文章 &mdash; Git 工作流</h2>
+    <p>用 Markdown 写作，Git 管理版本，推送即发布。</p>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg></span> 创建一篇文章</h3>
+    <p>在 <code>content/</code> 目录下创建 Markdown 文件：</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-filename">content/my-first-post.md</span>
+        </div>
+        <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+      </div>
+      <div class="code-body">
+<pre><span class="tag">---</span>
+<span class="prop">title</span>: <span class="string">"我的第一篇博客"</span>
+<span class="prop">date</span>: <span class="string">"2025-01-15"</span>
+<span class="prop">excerpt</span>: <span class="string">"这是摘要内容"</span>
+<span class="prop">tags</span>: [<span class="string">"随笔"</span>, <span class="string">"技术"</span>]
+<span class="tag">---</span>
+
+<span class="comment">## Hello World</span>
+
+这是我的第一篇文章，使用 Markdown 编写。
+
+<span class="comment">### 支持的语法</span>
+
+- <span class="keyword">**粗体**</span> 和 <span class="keyword">*斜体*</span>
+- 代码块: <span class="string">`console.log('hello')`</span>
+- 图片: <span class="string">![描述](/images/photo.jpg)</span>
+- 链接: <span class="string">[文字](https://example.com)</span></pre>
+      </div>
+    </div>
+
+    <h3><span class="icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></span> Git 发布流程</h3>
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-filename">Terminal &mdash; 每次发布文章</span>
+        </div>
+        <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+      </div>
+      <div class="code-body">
+<pre><span class="comment"># 1. 写完文章后，添加到暂存区</span>
+<span class="keyword">git</span> add content/my-first-post.md
+
+<span class="comment"># 2. 提交</span>
+<span class="keyword">git</span> commit -m <span class="string">"post: 添加第一篇博客文章"</span>
+
+<span class="comment"># 3. 推送 &rarr; Vercel 自动部署！</span>
+<span class="keyword">git</span> push origin main</pre>
+      </div>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span>
+      <div><strong>提交规范：</strong>建议使用约定式提交：<code>post:</code> 新文章、<code>fix:</code> 修复、<code>feat:</code> 新功能。方便日后回顾。</div>
+    </div>
+
+    <!-- Toggle: 高级工作流 -->
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> 高级工作流：草稿分支 + PR 预览
+      </div>
+      <div class="toggle-content">
+        <p>对于重要的文章，可以先创建草稿分支，写完再通过 Pull Request 合并。Vercel 会为每个 PR 自动生成预览链接，方便你检查效果。</p>
+        <div class="code-block">
+          <div class="code-body">
+<pre><span class="comment"># 创建草稿分支</span>
+<span class="keyword">git</span> checkout -b draft/my-article
+
+<span class="comment"># 写完后推送并创建 PR</span>
+<span class="keyword">git</span> push origin draft/my-article
+<span class="comment"># 在 GitHub 上创建 Pull Request</span>
+<span class="comment"># Vercel 会自动生成预览 URL</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Section 5: 绑定域名 ═══ -->
+  <section class="section" id="domain">
+    <div class="section-number">05</div>
+    <h2>绑定自定义域名</h2>
+    <p>让你的博客拥有专属域名，如 blog.yourname.com。</p>
+
+    <div class="step-cards">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-card-text">
+          <strong>购买域名</strong>
+          <span>推荐 Namesilo / Cloudflare / 阿里云，一般 .com 域名年费 &asymp; ¥50-70</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-card-text">
+          <strong>Vercel 添加域名</strong>
+          <span>Settings &rarr; Domains &rarr; 输入你的域名</span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-card-text">
+          <strong>配置 DNS 解析</strong>
+          <span>在域名商后台添加 CNAME 记录指向 <code>cname.vercel-dns.com</code></span>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-card-text">
+          <strong>等待生效</strong>
+          <span>DNS 传播需要几分钟到几小时，Vercel 自动配置 HTTPS 证书</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green">
+      <span class="callout-icon"><svg class="svg-icon svg-icon-18" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+      <div><strong>HTTPS 免费自动配置：</strong>Vercel 会自动为你的域名签发 SSL 证书，无需额外操作。</div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Section 6: 进阶优化 ═══ -->
+  <section class="section" id="advanced">
+    <div class="section-number">06</div>
+    <h2>进阶优化</h2>
+    <p>让你的博客更快、更好看、更容易被搜索到。</p>
+
+    <!-- Toggle 组 -->
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg> 主题美化
+      </div>
+      <div class="toggle-content">
+        <p>推荐几款优秀的 Next.js 博客主题：</p>
+        <ul style="padding-left:20px; margin-top:8px; font-size:14px; color:var(--text-secondary); line-height:2;">
+          <li><strong>Tailwind Blog</strong> &mdash; Tailwind CSS 官方博客模板</li>
+          <li><strong>Nextra</strong> &mdash; 基于 MDX 的文档/博客框架</li>
+          <li><strong>Lumen</strong> &mdash; 极简风格，Notion-like</li>
+          <li><strong>Bejamas Blog Starter</strong> &mdash; 现代化设计</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg> 性能优化 (Core Web Vitals)
+      </div>
+      <div class="toggle-content">
+        <div class="checklist">
+          <li><div class="check-box" onclick="this.classList.toggle('checked')"></div><span>使用 <code>next/image</code> 自动优化图片</span></li>
+          <li><div class="check-box" onclick="this.classList.toggle('checked')"></div><span>开启 ISR（增量静态生成），兼顾速度与更新</span></li>
+          <li><div class="check-box" onclick="this.classList.toggle('checked')"></div><span>字体用 <code>next/font</code> 加载，避免 CLS</span></li>
+          <li><div class="check-box" onclick="this.classList.toggle('checked')"></div><span>代码分割：动态 import 重型组件</span></li>
+          <li><div class="check-box" onclick="this.classList.toggle('checked')"></div><span>用 Lighthouse 跑分，目标 90+</span></li>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> SEO 优化
+      </div>
+      <div class="toggle-content">
+        <div class="code-block">
+          <div class="code-header">
+            <div class="code-header-left">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">app/blog/[slug]/page.tsx</span>
+            </div>
+            <button class="code-copy" onclick="copyCode(this)"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy</button>
+          </div>
+          <div class="code-body">
+<pre><span class="keyword">export</span> <span class="keyword">async</span> <span class="function">function</span> <span class="function">generateMetadata</span>({ <span class="variable">params</span> }) {
+  <span class="keyword">const</span> <span class="variable">post</span> = <span class="keyword">await</span> <span class="function">getPost</span>(<span class="variable">params</span>.<span class="prop">slug</span>);
+
+  <span class="keyword">return</span> {
+    <span class="prop">title</span>: <span class="variable">post</span>.<span class="prop">title</span>,
+    <span class="prop">description</span>: <span class="variable">post</span>.<span class="prop">excerpt</span>,
+    <span class="prop">openGraph</span>: {
+      <span class="prop">title</span>: <span class="variable">post</span>.<span class="prop">title</span>,
+      <span class="prop">description</span>: <span class="variable">post</span>.<span class="prop">excerpt</span>,
+      <span class="prop">type</span>: <span class="string">'article'</span>,
+    },
+  };
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        <svg class="svg-icon svg-icon-16" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg> 评论系统
+      </div>
+      <div class="toggle-content">
+        <p>推荐免费方案：</p>
+        <ul style="padding-left:20px; margin-top:8px; font-size:14px; color:var(--text-secondary); line-height:2;">
+          <li><strong>Giscus</strong> &mdash; 基于 GitHub Discussions，免费无广告</li>
+          <li><strong>Utterances</strong> &mdash; 基于 GitHub Issues，轻量</li>
+          <li><strong>Disqus</strong> &mdash; 老牌方案（有广告）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ Section 7: FAQ ═══ -->
+  <section class="section" id="faq">
+    <div class="section-number">07</div>
+    <h2>常见问题 FAQ</h2>
+    <p>新手最常遇到的问题，点击展开查看解答。</p>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        Vercel 免费版有什么限制？
+      </div>
+      <div class="toggle-content">
+        <p>免费额度：每月 100GB 带宽、无限次部署、Serverless 函数 10秒超时。个人博客完全够用，日均几千访问量没有问题。</p>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        推送后多久能看到更新？
+      </div>
+      <div class="toggle-content">
+        <p>通常 30 秒 ~ 2 分钟。Vercel 检测到 push 后会自动触发构建和部署。如果文章较多，构建时间会长一些。</p>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        不想用 Next.js，有其他选择吗？
+      </div>
+      <div class="toggle-content">
+        <p>可以！Vercel 支持多种框架：Astro（推荐静态博客）、Hugo、Hexo、Gatsby、甚至纯 HTML。Astro 特别适合博客，默认零 JS 输出。</p>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        如何在手机上写文章？
+      </div>
+      <div class="toggle-content">
+        <p>可以用 GitHub 网页端直接编辑 Markdown 文件并 commit。或者使用 StackEdit、Obsidian 等工具写好后粘贴到 GitHub。</p>
+      </div>
+    </div>
+
+    <div class="toggle-block">
+      <div class="toggle-header" onclick="this.parentElement.classList.toggle('open')">
+        <svg class="svg-icon svg-icon-14 toggle-arrow-svg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+        部署失败了怎么办？
+      </div>
+      <div class="toggle-content">
+        <p>在 Vercel Dashboard &rarr; Deployments 中查看构建日志，常见原因：依赖安装失败（检查 package.json）、语法错误、环境变量缺失。</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ═══ 完整工作流总结 ═══ -->
+  <section class="section" id="summary">
+    <div class="section-number"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24" style="stroke:#fff;stroke-width:3;"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h2>完整工作流总结</h2>
+    <p>一图看懂从写作到上线的全流程。</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-header-left">
+          <div class="code-dots"><span></span><span></span><span></span></div>
+          <span class="code-filename">Workflow</span>
+        </div>
+      </div>
+      <div class="code-body">
+<pre style="text-align:center; color:#9cdcfe; font-family:var(--font-body); font-size:14px;">
+<svg class="svg-icon svg-icon-16" style="stroke:#dcdcaa;vertical-align:middle;" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg> 写 Markdown     &rarr;     <svg class="svg-icon svg-icon-16" style="stroke:#dcdcaa;vertical-align:middle;" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> git commit     &rarr;     <svg class="svg-icon svg-icon-16" style="stroke:#dcdcaa;vertical-align:middle;" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg> git push     &rarr;     <svg class="svg-icon svg-icon-16" style="stroke:#dcdcaa;vertical-align:middle;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg> Vercel 自动部署
+
+<span style="color:#6a9955;"># content/xxx.md</span>         <span style="color:#6a9955;"># 本地仓库</span>              <span style="color:#6a9955;"># GitHub</span>            <span style="color:#6a9955;"># 全球 CDN 秒开</span></pre>
+      </div>
+    </div>
+
+    <!-- Bookmark Cards -->
+    <div style="margin-top:28px;">
+      <h3 style="margin-bottom:14px;"><svg class="svg-icon svg-icon-18" style="vertical-align:middle;margin-right:6px;" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> 推荐资源</h3>
+
+      <a class="bookmark-card" href="https://vercel.com/docs" target="_blank" rel="noopener">
+        <div class="bookmark-info">
+          <div class="bm-title">Vercel 官方文档</div>
+          <div class="bm-desc">部署、域名、框架配置的权威参考</div>
+          <div class="bm-url"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> vercel.com/docs</div>
+        </div>
+        <div class="bookmark-img"><svg class="svg-icon svg-icon-36" viewBox="0 0 24 24" style="stroke:var(--accent-blue);"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      </a>
+
+      <a class="bookmark-card" href="https://nextjs.org/docs" target="_blank" rel="noopener">
+        <div class="bookmark-info">
+          <div class="bm-title">Next.js 文档</div>
+          <div class="bm-desc">App Router、静态生成、图片优化等核心功能</div>
+          <div class="bm-url"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> nextjs.org/docs</div>
+        </div>
+        <div class="bookmark-img"><svg class="svg-icon svg-icon-36" viewBox="0 0 24 24" style="stroke:var(--accent-purple);"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      </a>
+
+      <a class="bookmark-card" href="https://github.com/vercel/next.js/tree/canary/examples/blog-starter" target="_blank" rel="noopener">
+        <div class="bookmark-info">
+          <div class="bm-title">Next.js Blog Starter</div>
+          <div class="bm-desc">官方博客模板，一键部署到 Vercel</div>
+          <div class="bm-url"><svg class="svg-icon svg-icon-14" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> github.com/vercel/next.js</div>
+        </div>
+        <div class="bookmark-img"><svg class="svg-icon svg-icon-36" viewBox="0 0 24 24" style="stroke:var(--accent-green);"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Made with <span class="heart"><svg class="svg-icon svg-icon-16" viewBox="0 0 24 24" style="stroke:var(--accent-red);fill:var(--accent-red);"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></span> using Vercel + Git</p>
+    <p style="margin-top:6px; font-size:12px; color:var(--text-secondary);">
+      本教程基于 Next.js + Vercel 免费方案 &middot; 2025
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const scrolled = (window.scrollY / docH) * 100;
+    document.getElementById('progressBar').style.width = scrolled + '%';
+
+    // Nav shadow
+    document.getElementById('navBar').classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  // Scroll reveal
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // Copy code
+  function copyCode(btn) {
+    const code = btn.closest('.code-block').querySelector('pre').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.innerHTML = '<svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.7);vertical-align:middle;margin-right:3px;"><path d="M20 6 9 17l-5-5"/></svg> Copied!';
+      setTimeout(() => btn.innerHTML = '<svg class="svg-icon svg-icon-14" viewBox="0 0 24 24" style="stroke:rgba(255,255,255,0.5);vertical-align:middle;margin-right:3px;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy', 1500);
+    });
+  }
+</script>
+</body>
+</html>
