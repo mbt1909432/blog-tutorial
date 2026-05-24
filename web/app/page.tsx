@@ -113,18 +113,15 @@ export default function Home() {
         <section className="section-reveal mb-14" id="start">
           <SectionNum n="01" />
           <h2 className="font-[family-name:var(--font-display)] text-[26px] font-bold leading-tight mb-2 tracking-tight">启动</h2>
-          <p className="text-[15px] text-secondary mb-6">安装 Claude Code，登录 GitHub 和 Vercel。之后所有操作都在 Claude Code 里用自然语言完成。</p>
+          <p className="text-[15px] text-secondary mb-6">安装 Claude Code，配置智谱 GLM API，登录 GitHub 和 Vercel。之后所有操作都在 Claude Code 里用自然语言完成。</p>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
             <H3Icon><IconWrench /></H3Icon> 安装 Claude Code
           </h3>
 
-          <PromptBlock>
-            在终端运行以下命令安装 Claude Code（需要先装好 Node.js）：
-          </PromptBlock>
-
           <ActionBlock>
             <CodeBlock filename="Terminal — 安装 Claude Code">
+              <span className="comment"># 需要先装好 Node.js（v18+）</span>{"\n"}
               <span className="keyword">npm</span> install -g @anthropic-ai/claude-code{"\n\n"}
               <span className="comment"># 进入你的工作目录</span>{"\n"}
               <span className="keyword">cd</span> ~/projects{"\n"}
@@ -137,14 +134,43 @@ export default function Home() {
           </ResultBlock>
 
           <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
+            <H3Icon><IconKey /></H3Icon> 配置智谱 GLM API
+          </h3>
+          <p className="text-[15px] text-secondary leading-relaxed mb-4">
+            Claude Code 默认使用 Anthropic 的 API，国内用户推荐使用智谱 GLM 编码套餐，速度更快且无需海外信用卡。配置方法参考 <a href="https://docs.bigmodel.cn/cn/guide/develop/claude" target="_blank" rel="noopener" className="text-accent-blue font-semibold no-underline hover:underline">智谱官方文档</a>。
+          </p>
+
+          <PromptBlock>
+            让 Claude Code 帮你配置智谱 API：&ldquo;帮我配置 Claude Code 使用智谱 GLM API，我的 API Key 是 xxx&rdquo;
+          </PromptBlock>
+
+          <ActionBlock>
+            <p className="text-sm text-secondary leading-relaxed mb-3">Claude Code 会自动修改配置文件，将默认模型指向智谱 GLM。</p>
+            <CodeBlock filename="~/.claude/settings.json — 自动生成">
+              {"{"}{"\n"}
+              {"  "}<span className="string">"env"</span>: {"{"}{"\n"}
+              {"    "}<span className="string">"ANTHROPIC_BASE_URL"</span>: <span className="string">"https://open.bigmodel.cn/api/paas/v4"</span>,{"\n"}
+              {"    "}<span className="string">"ANTHROPIC_API_KEY"</span>: <span className="string">"你的智谱 API Key"</span>,{"\n"}
+              {"    "}<span className="string">"ANTHROPIC_DEFAULT_SONNET_MODEL"</span>: <span className="string">"glm-4.7"</span>,{"\n"}
+              {"    "}<span className="string">"ANTHROPIC_DEFAULT_HAIKU_MODEL"</span>: <span className="string">"glm-4.5-air"</span>,{"\n"}
+              {"    "}<span className="string">"ANTHROPIC_DEFAULT_OPUS_MODEL"</span>: <span className="string">"glm-4.7"</span>{"\n"}
+              {"  "}{"}"}{"\n"}
+              {"}"}
+            </CodeBlock>
+          </ActionBlock>
+
+          <ResultBlock>
+            <strong>配置完成！</strong>重启 Claude Code 后即可使用智谱 GLM 模型。GLM 编码套餐性价比很高，适合学生和新手。
+          </ResultBlock>
+
+          <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold mt-7 mb-3 flex items-center gap-2">
             <H3Icon><IconKey /></H3Icon> 登录服务（只需一次）
           </h3>
-          <p className="text-[15px] text-secondary mb-4">在 Claude Code 启动前，你需要手动完成以下步骤：</p>
+          <p className="text-[15px] text-secondary mb-4">在开始开发前，你需要手动完成以下登录（只需一次）：</p>
 
           <div className="grid gap-3 my-5">
             <StepCard n={1} title="GitHub 登录" desc="终端运行 gh auth login，按提示用浏览器授权" />
             <StepCard n={2} title="Vercel 登录" desc="终端运行 vercel login，按提示用浏览器授权" />
-            <StepCard n={3} title="Claude Code 登录" desc="首次运行 claude 会引导你登录 Anthropic 账号" />
           </div>
 
           <Callout variant="green" icon={<IconCheckCircle size={18} />}>
