@@ -592,6 +592,14 @@ export default function Home() {
             Made with <IconHeart size={16} className="text-accent-red" /> using Vercel + Git
           </p>
           <p className="text-xs text-secondary mt-1.5">本教程基于 Next.js + Vercel 免费方案 &middot; 2025</p>
+          <a
+            href="https://web-mauve-five-17.vercel.app"
+            target="_blank"
+            rel="noopener"
+            className="inline-flex items-center gap-1.5 mt-2 px-4 py-1.5 rounded-lg bg-accent-blue-bg text-accent-blue text-[13px] font-semibold no-underline"
+          >
+            <IconGlobe size={16} /> 在线预览 web-mauve-five-17.vercel.app
+          </a>
         </footer>
       </div>
     </>
