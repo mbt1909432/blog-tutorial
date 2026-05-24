@@ -225,6 +225,10 @@ export default function Home() {
             <Callout variant="purple" icon={<IconBot size={18} />}>
               <strong>Skills 使用场景：</strong>让 AI 用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">frontend-design</code> 生成博客首页布局 → 用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">tailwind-design-system</code> 统一样式 → 用 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">seo-audit</code> 检查 SEO。全链路 AI 辅助！
             </Callout>
+
+            <Callout variant="green" icon={<IconSparkles size={18} />}>
+              <strong>你不需要手动输入任何命令！</strong>本教程中展示的所有 <code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">git</code>、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">gh</code>、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">vercel</code>、<code className="font-mono text-xs bg-accent-red-bg text-accent-red px-1.5 py-0.5 rounded font-medium">npm</code> 命令都是由 Claude Code 自动执行的。你只需要用自然语言描述需求（比如 "帮我创建项目并部署到 Vercel"），Claude Code 就会自动运行这些命令、创建文件、完成部署。这就是 AI 驱动开发的流程。
+            </Callout>
           </div>
 
           {/* Tool overview */}
